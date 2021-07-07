@@ -103,3 +103,11 @@ Users can share what ingredients they have in their house, and the app will give
     * ingredients detailed view
 * Scan shopping list
     * ingredients list
+
+## Wireframes
+<img src="https://i.imgur.com/FeWi1T7.jpg" width=600>
+<img src="https://i.imgur.com/Rxo1e4s.jpg" width=600>
+<img src="https://i.imgur.com/0ce84Nv.jpg" width=600>
+<img src="https://i.imgur.com/oModltG.jpg" width=600>
+<img src="https://i.imgur.com/KeBoZbc.jpg" width=600>
+<img src="https://i.imgur.com/HkiezjQ.jpg" width=600>
