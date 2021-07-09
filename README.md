@@ -111,3 +111,80 @@ Users can share what ingredients they have in their house, and the app will give
 <img src="https://i.imgur.com/oModltG.jpg" width=600>
 <img src="https://i.imgur.com/KeBoZbc.jpg" width=600>
 <img src="https://i.imgur.com/HkiezjQ.jpg" width=600>
+
+## Schema 
+
+### Models
+#### Recipe
+Property | Type | Description
+--- | --- | ---
+objectId | String | unique id for the user recipe (default field)
+author | Pointer to User | recipe author
+title | String | title of recipe
+image | File | image that user posts along with recipe
+servings | Number | number of servings in recipe
+readyInMinutes | Number | number of minutes the recipe takes to make
+ingredients | Array | list of ingredients needed for recipe as strings
+steps | Array | list of steps to make recipe as strings
+favoritedCount | Number | number of favorites for the recipe
+createdAt | DateTime | date when recipe is created (default field)
+updatedAt | DateTime | date when recipe is last updated (default field)
+
+#### User
+Property | Type | Description
+--- | --- | ---
+objectId | String | unique id for the user (default field)
+username | String | unique username for user
+password | String | password for user account
+ingredientsOwned | Array | list of ingredients owned by user as strings
+recipesFavoritedAPI | Array | list of strings of recipe IDs
+recipesFavoritedPosted | Array | list of pointers to recipes created by other users (https://community.parseplatform.org/t/array-of-pointers/746/2)
+
+### Networking
+#### List of network requests by screen
+- Ingredients screen
+    - (Update/PUT) Update user ingredientsOwned
+- Recipes search screen
+    - (Read/GET) Query all posts where ingredients overlap with ingredientsOwned by user
+        ```code
+        new List<Recipe> validRecipes;
+        ParseQuery<Recipe> query = ParseQuery.getQuery(Recipe.class);
+        query.findInBackground(new FindCallback<Recipe>() {
+            @Override
+            public void done(List<Recipe> recipes, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Issue with getting recipes", e);
+                    return;
+                }
+                validRecipes.clear();
+                Set<String> ingredients;
+                for (Recipe recipe : recipes) {
+                    // make a set of ingredients from recipe
+                    ingredients = new HashSet<String>(Arrays.asList(recipe.getIngredients()));
+                    // wantedIngredients is a set containing all ingredients owned by user
+                    if (ingredients.containsAll(wantedIngredients)) {
+                        validRecipes.add(recipe);
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+        ```
+    - (Create/POST) Create a new favorite on a post
+    - (Delete) Delete existing favorite
+    - (Update/PUT) Update user recipesFavoritedPosted
+- Recipe detail screen
+    - (Read/GET) Query recipe details
+- Recipes compose screen
+    - Create/POST) Create a new recipe object
+- User Profile/Favorites screen
+    - (Read/GET) Query logged in user object
+
+#### [OPTIONAL:] Existing API Endpoints
+##### Spoonacular API
+- Base URL: https://api.spoonacular.com/recipes
+
+    HTTP Verb | Endpoint | Description
+    --- | --- | ---
+    `GET` | /findByIngredients?ingredients=apples,+flour,+sugar&number=2 | get recipe by ingredients
+    `GET` | /{id}/information?includeNutrition=false | get recipe details
