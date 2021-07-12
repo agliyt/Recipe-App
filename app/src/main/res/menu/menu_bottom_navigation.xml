@@ -6,25 +6,25 @@
         android:id="@+id/ingredientsTab"
         android:icon="@drawable/ic_round_view_list_24"
         app:showAsAction="always"
-        android:title="ingredents" />
+        android:title="@string/ingredents" />
     <item
         android:id="@+id/recipesTab"
         android:icon="@drawable/ic_outline_fastfood_24"
         app:showAsAction="always"
-        android:title="recipes" />
+        android:title="@string/recipes" />
     <item
         android:id="@+id/composeTab"
         android:icon="@drawable/ic_outline_create_24"
         app:showAsAction="always"
-        android:title="make recipe" />
+        android:title="@string/make_recipe" />
     <item
         android:id="@+id/shoppingListTab"
         android:icon="@drawable/ic_outline_shopping_cart_24"
         app:showAsAction="always"
-        android:title="shopping list" />
+        android:title="@string/shopping_list" />
     <item
         android:id="@+id/favoritesTab"
         android:icon="@drawable/ic_round_star_outline_24"
         app:showAsAction="always"
-        android:title="favorites" />
+        android:title="@string/favorites" />
 </menu>
