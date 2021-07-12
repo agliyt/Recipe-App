@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/ingredientsTab"
+        android:icon="@drawable/ic_round_view_list_24"
+        app:showAsAction="always"
+        android:title="ingredents" />
+    <item
+        android:id="@+id/recipesTab"
+        android:icon="@drawable/ic_outline_fastfood_24"
+        app:showAsAction="always"
+        android:title="recipes" />
+    <item
+        android:id="@+id/composeTab"
+        android:icon="@drawable/ic_outline_create_24"
+        app:showAsAction="always"
+        android:title="make recipe" />
+    <item
+        android:id="@+id/shoppingListTab"
+        android:icon="@drawable/ic_outline_shopping_cart_24"
+        app:showAsAction="always"
+        android:title="shopping list" />
+    <item
+        android:id="@+id/favoritesTab"
+        android:icon="@drawable/ic_round_star_outline_24"
+        app:showAsAction="always"
+        android:title="favorites" />
+</menu>
