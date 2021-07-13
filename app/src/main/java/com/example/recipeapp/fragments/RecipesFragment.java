@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,18 +24,16 @@ import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import okhttp3.Headers;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecipesFragment extends Fragment {
+public class RecipesFragment extends Fragment implements RecipesAdapter.onClickListener {
 
     public static final String REST_CONSUMER_KEY = BuildConfig.CONSUMER_KEY;
     public static final String BASE_URL = "https://api.spoonacular.com/recipes/findByIngredients";
@@ -65,7 +64,7 @@ public class RecipesFragment extends Fragment {
         rvRecipes = view.findViewById(R.id.rvRecipes);
 
         allRecipes = new ArrayList<>();
-        adapter = new RecipesAdapter(getContext(), allRecipes);
+        adapter = new RecipesAdapter(getContext(), allRecipes, RecipesFragment.this);
 
         // create data for one row in list
         // create adapter
@@ -108,5 +107,20 @@ public class RecipesFragment extends Fragment {
                 Log.d(TAG, "onFailure: " + response + throwable);
             }
         });
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        final Recipe recipe = allRecipes.get(position);
+        FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        RecipeDetailsFragment recipeDetailsFragment = new RecipeDetailsFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("recipe", recipe);
+        recipeDetailsFragment.setArguments(bundle);
+        ft.replace(android.R.id.content, recipeDetailsFragment);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 }

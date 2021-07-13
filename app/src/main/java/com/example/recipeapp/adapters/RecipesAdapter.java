@@ -21,9 +21,16 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
     private Context context;
     private List<Recipe> recipes;
 
-    public RecipesAdapter(Context context, List<Recipe> recipes) {
+    public interface onClickListener{
+        void onItemClicked(int position);
+    }
+
+    onClickListener onClickListener;
+
+    public RecipesAdapter(Context context, List<Recipe> recipes, onClickListener onClickListener) {
         this.context = context;
         this.recipes = recipes;
+        this.onClickListener = onClickListener;
     }
 
     @NonNull
@@ -44,7 +51,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
         return recipes.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tvTitlePreview;
         private ImageView ivImagePreview;
@@ -55,7 +62,6 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
             tvTitlePreview = itemView.findViewById(R.id.tvTitlePreview);
             ivImagePreview = itemView.findViewById(R.id.ivImagePreview);
             tvIngredientsCount = itemView.findViewById(R.id.tvIngredientsCount);
-            itemView.setOnClickListener(this);
         }
 
         public void bind(Recipe recipe) {
@@ -66,11 +72,14 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
             Glide.with(context)
                     .load(recipe.getImageUrl())
                     .into(ivImagePreview);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onClickListener.onItemClicked(getAdapterPosition());
+                }
+            });
         }
 
-        @Override
-        public void onClick(View v) {
-
-        }
     }
 }

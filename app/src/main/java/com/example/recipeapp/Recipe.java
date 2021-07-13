@@ -4,10 +4,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Recipe {
+public class Recipe implements Serializable {
 
     String title;
     String imageUrl;
@@ -23,10 +24,10 @@ public class Recipe {
         id = jsonObject.getInt("id");
     }
 
-    public static List<Recipe> fromJsonArray(JSONArray movieJsonArray) throws JSONException {
+    public static List<Recipe> fromJsonArray(JSONArray jsonArray) throws JSONException {
         List<Recipe> recipes = new ArrayList<>();
-        for (int i = 0; i < movieJsonArray.length(); i++) {
-            recipes.add(new Recipe(movieJsonArray.getJSONObject(i)));
+        for (int i = 0; i < jsonArray.length(); i++) {
+            recipes.add(new Recipe(jsonArray.getJSONObject(i)));
         }
         return recipes;
     }
