@@ -61,7 +61,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
         public void bind(Recipe recipe) {
             // bind post data to view elements
             tvTitlePreview.setText(recipe.getTitle());
-            tvIngredientsCount.setText("Missed ingredients: " + recipe.getMissedIngredientsCount() + "     Used ingredients: " + recipe.getUsedIngredientsCount());
+            tvIngredientsCount.setText("Missed ingredients: " + String.valueOf(recipe.getMissedIngredientsCount()) + "     Used ingredients: " + String.valueOf(recipe.getUsedIngredientsCount()));
             Glide.with(context)
                     .load(recipe.getImageUrl())
                     .into(ivImagePreview);

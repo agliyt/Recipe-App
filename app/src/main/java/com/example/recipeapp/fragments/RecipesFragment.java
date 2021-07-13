@@ -37,8 +37,9 @@ import okhttp3.Headers;
 public class RecipesFragment extends Fragment {
 
     public static final String REST_CONSUMER_KEY = BuildConfig.CONSUMER_KEY;
-    public static String SEARCH_RECIPES_URL = "https://api.spoonacular.com/recipes/findByIngredients";
+    public static final String BASE_URL = "https://api.spoonacular.com/recipes/findByIngredients";
     public static final String TAG = "RecipesFragment";
+    String SEARCH_RECIPES_URL;
 
     RecyclerView rvRecipes;
     List<Recipe> allRecipes;
@@ -85,7 +86,7 @@ public class RecipesFragment extends Fragment {
         sb.append(ingredients.get(ingredients.size()-1));
         ingredientsString = sb.toString();
 
-        SEARCH_RECIPES_URL = SEARCH_RECIPES_URL + "?ingredients=" + ingredientsString + "&number=20&ranking=2&apiKey=" + REST_CONSUMER_KEY;
+        SEARCH_RECIPES_URL = BASE_URL + "?ingredients=" + ingredientsString + "&number=20&ranking=2&apiKey=" + REST_CONSUMER_KEY;
         Log.i(TAG, SEARCH_RECIPES_URL);
 
         AsyncHttpClient client = new AsyncHttpClient();
