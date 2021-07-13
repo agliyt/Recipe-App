@@ -48,17 +48,20 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
 
         private TextView tvTitlePreview;
         private ImageView ivImagePreview;
+        private TextView tvIngredientsCount;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitlePreview = itemView.findViewById(R.id.tvTitlePreview);
             ivImagePreview = itemView.findViewById(R.id.ivImagePreview);
+            tvIngredientsCount = itemView.findViewById(R.id.tvIngredientsCount);
             itemView.setOnClickListener(this);
         }
 
         public void bind(Recipe recipe) {
             // bind post data to view elements
             tvTitlePreview.setText(recipe.getTitle());
+            tvIngredientsCount.setText("Missed ingredients: " + recipe.getMissedIngredientsCount() + "     Used ingredients: " + recipe.getUsedIngredientsCount());
             Glide.with(context)
                     .load(recipe.getImageUrl())
                     .into(ivImagePreview);

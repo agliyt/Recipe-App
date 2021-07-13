@@ -11,10 +11,14 @@ public class Recipe {
 
     String title;
     String imageUrl;
+    int missedIngredientsCount;
+    int usedIngredientsCount;
 
     public Recipe(JSONObject jsonObject) throws JSONException {
         title = jsonObject.getString("title");
         imageUrl = jsonObject.getString("image");
+        missedIngredientsCount = jsonObject.getInt("missedIngredientCount");
+        usedIngredientsCount = jsonObject.getInt("usedIngredientCount");
     }
 
     public static List<Recipe> fromJsonArray(JSONArray movieJsonArray) throws JSONException {
@@ -33,4 +37,11 @@ public class Recipe {
         return imageUrl;
     }
 
+    public int getMissedIngredientsCount() {
+        return missedIngredientsCount;
+    }
+
+    public int getUsedIngredientsCount() {
+        return usedIngredientsCount;
+    }
 }

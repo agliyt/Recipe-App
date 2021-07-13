@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
 
     <TextView
         android:id="@+id/tvTitlePreview"
@@ -13,6 +14,7 @@
         android:layout_toEndOf="@+id/ivImagePreview"
         android:fontFamily="@font/belgrano"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textSize="16sp"
         tools:text="Apple Or Peach Strudel" />
 
     <ImageView
@@ -20,5 +22,17 @@
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tvIngredientsCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvTitlePreview"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_toEndOf="@+id/ivImagePreview"
+        android:fontFamily="@font/belgrano"
+        android:textSize="12sp"
+        tools:text="Missed Ingredients: 1     Used Ingredients: 1" />
 
 </RelativeLayout>
