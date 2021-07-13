@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.FileUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.recipeapp.R;
 import com.example.recipeapp.adapters.IngredientsAdapter;
+import com.parse.ParseUser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,12 +30,15 @@ import java.util.List;
  */
 public class IngredientsFragment extends Fragment {
 
-    List<String> ingredients = new ArrayList<>();
+    public static final String TAG = "IngredientsFragment";
+
+    List<String> ingredients;
 
     Button btnAdd;
     EditText etIngredient;
     RecyclerView rvIngredients;
     IngredientsAdapter ingredientsAdapter;
+    ParseUser currentUser;
 
     public IngredientsFragment() {
         // Required empty public constructor
@@ -53,6 +58,9 @@ public class IngredientsFragment extends Fragment {
         btnAdd = view.findViewById(R.id.btnAdd);
         etIngredient = view.findViewById(R.id.etIngredient);
         rvIngredients = view.findViewById(R.id.rvIngredients);
+        currentUser = ParseUser.getCurrentUser();
+        ingredients = (List<String>) currentUser.get("ingredientsOwned");
+        Log.i(TAG, ingredients.toString());
 
         IngredientsAdapter.OnLongClickListener onLongClickListener = new IngredientsAdapter.OnLongClickListener() {
             @Override
@@ -61,6 +69,7 @@ public class IngredientsFragment extends Fragment {
                 ingredients.remove(position);
                 // Notify the adaptor
                 ingredientsAdapter.notifyItemRemoved(position);
+                updateIngredients();
                 Toast.makeText(getContext().getApplicationContext(), "Ingredient was removed", Toast.LENGTH_SHORT).show();
             }
         };
@@ -76,9 +85,28 @@ public class IngredientsFragment extends Fragment {
                 ingredients.add(todoItem);
                 // Notify the adaptor that we've inserted an item
                 ingredientsAdapter.notifyItemInserted(ingredients.size() - 1);
+                updateIngredients();
                 etIngredient.setText("");
                 Toast.makeText(getContext().getApplicationContext(), "Ingredient was added", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void updateIngredients() {
+        if (currentUser != null) {
+            // Other attributes than "ingredientsOwned" will remain unchanged!
+            currentUser.put("ingredientsOwned", ingredients);
+
+            // Saves the object.
+            currentUser.saveInBackground(e -> {
+                if(e==null){
+                    //Save successfull
+                    Log.i(TAG, "Save successful: " + ingredients.toString());
+                }else{
+                    // Something went wrong while saving
+                    Log.e(TAG, "Save unsuccessful", e);
+                }
+            });
+        }
     }
 }
