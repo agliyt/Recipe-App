@@ -98,9 +98,8 @@ public class RecipeDetailsFragment extends Fragment {
                         sb.append("\n");
                     }
                     sb.append(ingredients.get(ingredients.size()-1));
-                    String ingredientsString = sb.toString();
 
-                    tvIngredients.setText(ingredientsString);
+                    tvIngredients.setText(sb.toString());
 
                     Glide.with(getContext())
                             .load(recipeDetails.getImageUrl())
@@ -113,7 +112,7 @@ public class RecipeDetailsFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-
+                Log.e(TAG, "onFailure", throwable);
             }
         });
     }

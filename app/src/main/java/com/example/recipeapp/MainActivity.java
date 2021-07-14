@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                     default:
                         break;
                 }
-                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+                fragmentManager.beginTransaction().replace(R.id.flRecipesContainer, fragment).commit();
                 return true;
             }
         });
@@ -96,4 +96,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

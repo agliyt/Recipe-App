@@ -119,7 +119,7 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.onClickL
         Bundle bundle = new Bundle();
         bundle.putSerializable("recipe", recipe);
         recipeDetailsFragment.setArguments(bundle);
-        ft.replace(android.R.id.content, recipeDetailsFragment);
+        ft.replace(R.id.flRecipesContainer, recipeDetailsFragment);
         ft.addToBackStack(null);
         ft.commit();
     }
