@@ -32,13 +32,13 @@ public class IngredientsFragment extends Fragment {
 
     public static final String TAG = "IngredientsFragment";
 
-    List<String> ingredients;
+    private List<String> ingredients;
 
-    Button btnAdd;
-    EditText etIngredient;
-    RecyclerView rvIngredients;
-    IngredientsAdapter ingredientsAdapter;
-    ParseUser currentUser;
+    private Button btnAdd;
+    private EditText etIngredient;
+    private RecyclerView rvIngredients;
+    private IngredientsAdapter ingredientsAdapter;
+    private ParseUser currentUser;
 
     public IngredientsFragment() {
         // Required empty public constructor

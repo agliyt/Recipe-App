@@ -12,23 +12,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.recipeapp.R;
-import com.example.recipeapp.Recipe;
+import com.example.recipeapp.models.Recipe;
 
 import java.util.List;
 
 public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHolder> {
 
-    private Context context;
+    private Context mContext;
     private List<Recipe> recipes;
 
-    public interface onClickListener{
+    public interface OnClickListener{
         void onItemClicked(int position);
     }
 
-    onClickListener onClickListener;
+    OnClickListener onClickListener;
 
-    public RecipesAdapter(Context context, List<Recipe> recipes, onClickListener onClickListener) {
-        this.context = context;
+    public RecipesAdapter(Context mContext, List<Recipe> recipes, OnClickListener onClickListener) {
+        this.mContext = mContext;
         this.recipes = recipes;
         this.onClickListener = onClickListener;
     }
@@ -36,7 +36,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_recipe, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_recipe, parent, false);
         return new ViewHolder(view);
     }
 
@@ -69,7 +69,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
             tvTitlePreview.setText(recipe.getTitle());
             String INGREDIENTS_STRING = "Missed ingredients: " + String.valueOf(recipe.getMissedIngredientsCount()) + "     Used ingredients: " + String.valueOf(recipe.getUsedIngredientsCount());
             tvIngredientsCount.setText(INGREDIENTS_STRING);
-            Glide.with(context)
+            Glide.with(mContext)
                     .load(recipe.getImageUrl())
                     .into(ivImagePreview);
 

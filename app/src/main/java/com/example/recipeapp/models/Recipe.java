@@ -1,4 +1,4 @@
-package com.example.recipeapp;
+package com.example.recipeapp.models;
 
 import org.json.JSONArray;
 import org.json.JSONException;

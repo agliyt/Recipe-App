@@ -18,11 +18,10 @@ import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
-import com.example.recipeapp.Recipe;
-import com.example.recipeapp.RecipeDetails;
+import com.example.recipeapp.models.Recipe;
+import com.example.recipeapp.models.RecipeDetails;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,16 +38,16 @@ public class RecipeDetailsFragment extends Fragment {
     public static final String REST_CONSUMER_KEY = BuildConfig.CONSUMER_KEY;
     public static String RECIPE_DETAILS_URL;
 
-    Recipe recipe;
-    RecipeDetails recipeDetails;
-    int recipeId;
+    private Recipe recipe;
+    private RecipeDetails recipeDetails;
+    private int recipeId;
 
-    TextView tvTitle;
-    ImageView ivImage;
-    TextView tvServings;
-    TextView tvReadyInMinutes;
-    TextView tvIngredients;
-    TextView tvInstructions;
+    private TextView tvTitle;
+    private ImageView ivImage;
+    private TextView tvServings;
+    private TextView tvReadyInMinutes;
+    private TextView tvIngredients;
+    private TextView tvInstructions;
 
     public RecipeDetailsFragment() {
         // Required empty public constructor

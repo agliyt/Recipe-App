@@ -18,7 +18,7 @@ import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
-import com.example.recipeapp.Recipe;
+import com.example.recipeapp.models.Recipe;
 import com.example.recipeapp.adapters.RecipesAdapter;
 import com.parse.ParseUser;
 
@@ -33,19 +33,19 @@ import okhttp3.Headers;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecipesFragment extends Fragment implements RecipesAdapter.onClickListener {
+public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickListener {
 
     public static final String REST_CONSUMER_KEY = BuildConfig.CONSUMER_KEY;
     public static final String BASE_URL = "https://api.spoonacular.com/recipes/findByIngredients";
     public static final String TAG = "RecipesFragment";
-    String SEARCH_RECIPES_URL;
+    private String SEARCH_RECIPES_URL;
 
-    RecyclerView rvRecipes;
-    List<Recipe> allRecipes;
-    RecipesAdapter adapter;
-    ParseUser currentUser;
-    List<String> ingredients;
-    String ingredientsString;
+    private RecyclerView rvRecipes;
+    private List<Recipe> allRecipes;
+    private RecipesAdapter adapter;
+    private ParseUser currentUser;
+    private List<String> ingredients;
+    private String ingredientsString;
 
     public RecipesFragment() {
         // Required empty public constructor
