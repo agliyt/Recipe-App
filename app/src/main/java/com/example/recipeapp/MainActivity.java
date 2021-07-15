@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import com.example.recipeapp.fragments.ComposeFragment;
 import com.example.recipeapp.fragments.FavoritesFragment;
 import com.example.recipeapp.fragments.IngredientsFragment;
+import com.example.recipeapp.fragments.MakeRecipeFragment;
 import com.example.recipeapp.fragments.RecipesFragment;
 import com.example.recipeapp.fragments.ShoppingListFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.composeTab:
                         item.setIcon(R.drawable.ic_round_create_24);
-                        fragment = new ComposeFragment();
+                        fragment = new MakeRecipeFragment();
                         break;
                     case R.id.shoppingListTab:
                         item.setIcon(R.drawable.ic_baseline_shopping_cart_24);
