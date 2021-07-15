@@ -93,7 +93,6 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
     protected void queryUserRecipes() {
         ParseQuery<ParseRecipe> query = ParseQuery.getQuery(ParseRecipe.class);
         query.include("author");
-        query.setLimit(20);
         query.addDescendingOrder("createdAt");
         query.findInBackground(new FindCallback<ParseRecipe>() {
             @Override

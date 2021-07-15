@@ -69,9 +69,15 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
             tvTitlePreview.setText(recipe.getTitle());
             String INGREDIENTS_STRING = "Missed ingredients: " + String.valueOf(recipe.getMissedIngredientsCount()) + "     Used ingredients: " + String.valueOf(recipe.getUsedIngredientsCount());
             tvIngredientsCount.setText(INGREDIENTS_STRING);
-            Glide.with(mContext)
-                    .load(recipe.getImageUrl())
-                    .into(ivImagePreview);
+            if (recipe.isFromApi()) {
+                Glide.with(mContext)
+                        .load(recipe.getImageUrl())
+                        .into(ivImagePreview);
+            } else {
+                Glide.with(mContext)
+                        .load(recipe.getImage().getUrl())
+                        .into(ivImagePreview);
+            }
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

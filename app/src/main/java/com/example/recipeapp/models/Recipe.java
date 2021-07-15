@@ -65,7 +65,7 @@ public class Recipe implements Serializable {
             for (int j = 0; j < userIngredients.size(); j++) {
                 String ingredient = ingredientsParsed.get(i);
                 String userIngredient = userIngredients.get(j);
-                if (ingredient == userIngredient) {
+                if (ingredient.equals(userIngredient)) {
                     usedIngredientsCount++;
                 }
             }

@@ -18,8 +18,12 @@ import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
+import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
 import com.example.recipeapp.adapters.RecipesAdapter;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -42,6 +46,7 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
 
     private RecyclerView rvRecipes;
     private List<Recipe> allRecipes;
+    private List<Recipe> userRecipes;
     private RecipesAdapter adapter;
     private ParseUser currentUser;
     private List<String> ingredients;
@@ -64,6 +69,7 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
         rvRecipes = view.findViewById(R.id.rvRecipes);
 
         allRecipes = new ArrayList<>();
+        userRecipes = new ArrayList<>();
         adapter = new RecipesAdapter(getContext(), allRecipes, RecipesFragment.this);
 
         // create data for one row in list
@@ -76,6 +82,7 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
 
         currentUser = ParseUser.getCurrentUser();
         ingredients = (List<String>) currentUser.get("ingredientsOwned");
+        queryUserRecipes();
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ingredients.size()-1; i++) {
@@ -95,6 +102,19 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
                 JSONArray jsonArray = json.jsonArray;
                 try {
                     allRecipes.addAll(Recipe.fromJsonArray(jsonArray));
+
+                    // add all user recipes that fit into allRecipes (based on # ingredients missed)
+                    for (int i = 0; i < userRecipes.size(); i++) {
+                        for (Recipe currAllRecipe : allRecipes) {
+                            Recipe currUserRecipe = userRecipes.get(i);
+                            Log.i(TAG, currAllRecipe.getTitle());
+                            if (currUserRecipe.getMissedIngredientsCount() <= currAllRecipe.getMissedIngredientsCount()) {
+                                allRecipes.add(allRecipes.indexOf(currAllRecipe), currUserRecipe);
+                                break;
+                            }
+                        }
+                    }
+
                     adapter.notifyDataSetChanged();
                     Log.i(TAG, "Recipes: " + allRecipes.size());
                 } catch (JSONException e) {
@@ -105,6 +125,25 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.d(TAG, "onFailure: " + response + throwable);
+            }
+        });
+    }
+
+    protected void queryUserRecipes() {
+        ParseQuery<ParseRecipe> query = ParseQuery.getQuery(ParseRecipe.class);
+        query.findInBackground(new FindCallback<ParseRecipe>() {
+            @Override
+            public void done(List<ParseRecipe> parseRecipes, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Issue with getting recipes", e);
+                    return;
+                }
+                try {
+                    userRecipes.clear();
+                    userRecipes.addAll(Recipe.fromParseRecipeArray(parseRecipes));
+                } catch (JSONException jsonException) {
+                    jsonException.printStackTrace();
+                }
             }
         });
     }
