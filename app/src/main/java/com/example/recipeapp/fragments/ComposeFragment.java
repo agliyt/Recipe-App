@@ -2,18 +2,25 @@ package com.example.recipeapp.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class ComposeFragment extends Fragment {
+
+    public static final String REST_CONSUMER_KEY = BuildConfig.CONSUMER_KEY;
 
     public ComposeFragment() {
         // Required empty public constructor
@@ -26,4 +33,10 @@ public class ComposeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_compose, container, false);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        //String URL = "https://api.spoonacular.com/recipes/parseIngredients?ingredientList=" + jsonObject.getString("ingredients") + "&servings=" + String.valueOf(jsonObject.getInt("servings")) + "&includeNutrition=false&apiKey=" + REST_CONSUMER_KEY;
+
+    }
 }

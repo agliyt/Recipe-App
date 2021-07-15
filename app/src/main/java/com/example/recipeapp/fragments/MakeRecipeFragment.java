@@ -18,6 +18,7 @@ import android.widget.Button;
 import com.example.recipeapp.R;
 import com.example.recipeapp.adapters.ComposeAdapter;
 import com.example.recipeapp.adapters.RecipesAdapter;
+import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -90,20 +91,21 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
     }
 
     protected void queryUserRecipes() {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Recipe");
+        ParseQuery<ParseRecipe> query = ParseQuery.getQuery(ParseRecipe.class);
         query.include("author");
         query.setLimit(20);
         query.addDescendingOrder("createdAt");
-        query.findInBackground(new FindCallback<ParseObject>() {
+        query.findInBackground(new FindCallback<ParseRecipe>() {
             @Override
-            public void done(List<ParseObject> recipes, ParseException e) {
+            public void done(List<ParseRecipe> parseRecipes, ParseException e) {
                 if (e != null) {
-                    Log.e(TAG, "Issue with getting posts", e);
+                    Log.e(TAG, "Issue with getting recipes", e);
                     return;
                 }
-                recipes.clear();
                 try {
-                    allRecipes = Recipe.fromArrayList(recipes);
+                    Log.i(TAG, parseRecipes.get(0).getTitle());
+                    allRecipes.clear();
+                    allRecipes.addAll(Recipe.fromParseRecipeArray(parseRecipes));
                 } catch (JSONException jsonException) {
                     jsonException.printStackTrace();
                 }

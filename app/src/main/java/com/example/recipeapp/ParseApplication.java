@@ -1,6 +1,9 @@
 package com.example.recipeapp;
 
+import com.example.recipeapp.models.ParseRecipe;
 import com.parse.Parse;
+import com.parse.ParseObject;
+
 import android.app.Application;
 
 public class ParseApplication extends Application {
@@ -11,7 +14,7 @@ public class ParseApplication extends Application {
         super.onCreate();
 
         // Register your parse models here
-        // ParseObject.registerSubclass(Model.class);
+        ParseObject.registerSubclass(ParseRecipe.class);
 
         Parse.initialize(new Parse.Configuration.Builder(this)
                 .applicationId("gCAMkOgLAW5ecgtlOxsjefMMY7gBN2gHBW1q7P80")

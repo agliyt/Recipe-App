@@ -1,6 +1,7 @@
 package com.example.recipeapp.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +55,6 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private Button btnCompose;
         private TextView tvTitlePreview;
         private ImageView ivImagePreview;
         private TextView tvIngredientsCount;
@@ -64,7 +64,6 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
             tvTitlePreview = itemView.findViewById(R.id.tvTitlePreview);
             ivImagePreview = itemView.findViewById(R.id.ivImagePreview);
             tvIngredientsCount = itemView.findViewById(R.id.tvIngredientsCount);
-            btnCompose = itemView.findViewById(R.id.btnCompose);
         }
 
         public void bind(Recipe recipe) {
@@ -73,7 +72,7 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
             String INGREDIENTS_STRING = "Missed ingredients: " + String.valueOf(recipe.getMissedIngredientsCount()) + "     Used ingredients: " + String.valueOf(recipe.getUsedIngredientsCount());
             tvIngredientsCount.setText(INGREDIENTS_STRING);
             Glide.with(mContext)
-                    .load(recipe.getImageUrl())
+                    .load(recipe.getImage().getUrl())
                     .into(ivImagePreview);
 
             itemView.setOnClickListener(new View.OnClickListener() {
