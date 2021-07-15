@@ -29,6 +29,8 @@ public class Recipe implements Serializable {
     int usedIngredientsCount;
     int id;
     ParseUser currentUser;
+    int servings;
+    int readyInMinutes;
     String ingredients;
     String instructions;
 
@@ -44,6 +46,8 @@ public class Recipe implements Serializable {
         } else {
             title = parseRecipe.getTitle();
             image = parseRecipe.getImage();
+            servings = parseRecipe.getServings();
+            readyInMinutes = parseRecipe.getReadyInMinutes();
             ingredients = parseRecipe.getIngredients();
             instructions = parseRecipe.getInstructions();
             setNumberIngredients(parseRecipe);
@@ -110,6 +114,14 @@ public class Recipe implements Serializable {
 
     public int getId() {
         return id;
+    }
+
+    public int getServings() {
+        return servings;
+    }
+
+    public int getReadyInMinutes() {
+        return readyInMinutes;
     }
 
     public String getIngredients() {

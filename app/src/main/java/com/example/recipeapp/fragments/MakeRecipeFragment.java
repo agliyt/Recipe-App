@@ -116,6 +116,17 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
 
     @Override
     public void onItemClicked(int position) {
+        Log.i(TAG, "rvUserRecipes clicked at position " + String.valueOf(position));
+        final Recipe recipe = allRecipes.get(position);
+        FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        RecipeDetailsFragment recipeDetailsFragment = new RecipeDetailsFragment();
 
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("recipe", recipe);
+        recipeDetailsFragment.setArguments(bundle);
+        ft.replace(R.id.flRecipesContainer, recipeDetailsFragment);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 }
