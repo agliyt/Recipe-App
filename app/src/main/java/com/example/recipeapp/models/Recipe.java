@@ -35,6 +35,7 @@ public class Recipe implements Serializable {
     String instructions;
 
 
+    // jsonObject == null if isApiRecipe == false; parseRecipe == null if isApiRecipe == true
     public Recipe(JSONObject jsonObject, ParseRecipe parseRecipe, boolean isApiRecipe) throws JSONException {
         fromApi = isApiRecipe;
         if (isApiRecipe) {
@@ -96,10 +97,12 @@ public class Recipe implements Serializable {
         return title;
     }
 
+    // REQUiRES isFromApi() == true
     public String getImageUrl() {
         return imageUrl;
     }
 
+    // REQUiRES isFromApi() == false
     public ParseFile getImage() {
         return image;
     }
@@ -112,22 +115,27 @@ public class Recipe implements Serializable {
         return usedIngredientsCount;
     }
 
+    // REQUiRES isFromApi() == true
     public int getId() {
         return id;
     }
 
+    // REQUiRES isFromApi() == false
     public int getServings() {
         return servings;
     }
 
+    // REQUiRES isFromApi() == false
     public int getReadyInMinutes() {
         return readyInMinutes;
     }
 
+    // REQUiRES isFromApi() == false
     public String getIngredients() {
         return ingredients;
     }
 
+    // REQUiRES isFromApi() == false
     public String getInstructions() {
         return instructions;
     }
