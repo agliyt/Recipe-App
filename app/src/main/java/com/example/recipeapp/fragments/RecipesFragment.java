@@ -1,5 +1,6 @@
 package com.example.recipeapp.fragments;
 
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -165,6 +166,49 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
 
     @Override
     public void onFavoritesClicked(int position) {
+        final Recipe recipe = allRecipes.get(position);
+        List<String> favoriteApiRecipes = (List<String>) currentUser.get("recipesFavoritedAPI");
+        List<String> favoriteUserRecipes = (List<String>) currentUser.get("recipesFavoritedUser");
+        // handle whether recipe is in favorites or not
+        if (recipe.isFromApi()) {
+            if (favoriteApiRecipes.contains(String.valueOf(recipe.getId()))) { // already favorited
+                favoriteApiRecipes.remove(String.valueOf(recipe.getId()));
+            } else { // not favorited yet
+                favoriteApiRecipes.add(String.valueOf(recipe.getId()));
+            }
+            // Other attributes than "recipesFavoritedAPI" will remain unchanged!
+            currentUser.put("recipesFavoritedAPI", favoriteApiRecipes);
 
+            // Saves the object.
+            currentUser.saveInBackground(e -> {
+                if(e==null){
+                    //Save successfull
+                    Log.i(TAG, "Save successful: " + favoriteApiRecipes.toString());
+                }else{
+                    // Something went wrong while saving
+                    Log.e(TAG, "Save unsuccessful", e);
+                }
+            });
+        } else {
+            if (favoriteUserRecipes.contains(recipe.getObjectId())) { // already favorited
+                favoriteUserRecipes.remove(recipe.getObjectId());
+            } else { // not favorited yet
+                favoriteUserRecipes.add(recipe.getObjectId());
+            }
+            // Other attributes than "recipesFavoritedUser" will remain unchanged!
+            currentUser.put("recipesFavoritedUser", favoriteUserRecipes);
+
+            // Saves the object.
+            currentUser.saveInBackground(e -> {
+                if(e==null){
+                    //Save successfull
+                    Log.i(TAG, "Save successful: " + favoriteUserRecipes.toString());
+                }else{
+                    // Something went wrong while saving
+                    Log.e(TAG, "Save unsuccessful", e);
+                }
+            });
+        }
+        adapter.notifyDataSetChanged();
     }
 }

@@ -41,6 +41,7 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
 
     public static final String TAG = "MakeRecipesFragment";
 
+    private ParseUser currentUser;
     private RecyclerView rvUserRecipes;
     private List<Recipe> allRecipes;
     private ComposeAdapter adapter;
@@ -61,6 +62,8 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rvUserRecipes = view.findViewById(R.id.rvUserRecipes);
+
+        currentUser = ParseUser.getCurrentUser();
 
         allRecipes = new ArrayList<>();
         adapter = new ComposeAdapter(getContext(), allRecipes, MakeRecipeFragment.this);
@@ -131,6 +134,28 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
 
     @Override
     public void onFavoritesClicked(int position) {
+        final Recipe recipe = allRecipes.get(position);
+        List<String> favoriteUserRecipes = (List<String>) currentUser.get("recipesFavoritedUser");
+        // handle whether recipe is in favorites or not
+        if (favoriteUserRecipes.contains(recipe.getObjectId())) { // already favorited
+            favoriteUserRecipes.remove(recipe.getObjectId());
+        } else { // not favorited yet
+            favoriteUserRecipes.add(recipe.getObjectId());
+        }
+        // Other attributes than "recipesFavoritedUser" will remain unchanged!
+        currentUser.put("recipesFavoritedUser", favoriteUserRecipes);
 
+        // Saves the object.
+        currentUser.saveInBackground(e -> {
+            if(e==null){
+                //Save successfull
+                Log.i(TAG, "Save successful: " + favoriteUserRecipes.toString());
+            }else{
+                // Something went wrong while saving
+                Log.e(TAG, "Save unsuccessful", e);
+            }
+        });
+
+        adapter.notifyDataSetChanged();
     }
 }
