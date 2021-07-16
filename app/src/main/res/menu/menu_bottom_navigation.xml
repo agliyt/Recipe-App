@@ -6,7 +6,7 @@
         android:id="@+id/ingredientsTab"
         android:icon="@drawable/ic_round_view_list_24"
         app:showAsAction="always"
-        android:title="@string/ingredents" />
+        android:title="ingredients" />
     <item
         android:id="@+id/recipesTab"
         android:icon="@drawable/ic_outline_fastfood_24"

@@ -1,5 +1,6 @@
 package com.example.recipeapp.fragments;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -48,6 +50,7 @@ public class RecipeDetailsFragment extends Fragment {
     private TextView tvReadyInMinutes;
     private TextView tvIngredients;
     private TextView tvInstructions;
+    private RelativeLayout rlDetailsView;
 
     public RecipeDetailsFragment() {
         // Required empty public constructor
@@ -61,7 +64,7 @@ public class RecipeDetailsFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         Bundle bundle = getArguments();
@@ -74,6 +77,22 @@ public class RecipeDetailsFragment extends Fragment {
         tvReadyInMinutes = view.findViewById(R.id.tvReadyInMinutes);
         tvIngredients = view.findViewById(R.id.tvIngredientsText);
         tvInstructions = view.findViewById(R.id.tvInstructionsText);
+        rlDetailsView = view.findViewById(R.id.rlDetailsView);
+
+        int nightModeFlags =
+                getContext().getResources().getConfiguration().uiMode &
+                        Configuration.UI_MODE_NIGHT_MASK;
+        switch (nightModeFlags) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                rlDetailsView.setBackgroundColor(getResources().getColor(R.color.black));
+                break;
+
+            case Configuration.UI_MODE_NIGHT_NO:
+
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                rlDetailsView.setBackgroundColor(getResources().getColor(R.color.white));
+                break;
+        }
 
         if (recipe.isFromApi()) {
             RECIPE_DETAILS_URL = "https://api.spoonacular.com/recipes/" + String.valueOf(recipeId) + "/information?includeNutrition=false&apiKey=" + REST_CONSUMER_KEY;
