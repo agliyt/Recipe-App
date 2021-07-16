@@ -148,7 +148,7 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
         // Saves the object.
         currentUser.saveInBackground(e -> {
             if(e==null){
-                //Save successfull
+                //Save successful
                 Log.i(TAG, "Save successful: " + favoriteUserRecipes.toString());
             }else{
                 // Something went wrong while saving

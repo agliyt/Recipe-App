@@ -37,14 +37,21 @@ public class Recipe implements Serializable {
 
 
     // jsonObject == null if isApiRecipe == false; parseRecipe == null if isApiRecipe == true
-    public Recipe(JSONObject jsonObject, ParseRecipe parseRecipe, boolean isApiRecipe) throws JSONException {
+    public Recipe(JSONObject jsonObject, ParseRecipe parseRecipe, boolean isApiRecipe, boolean isFullRecipe) throws JSONException {
         fromApi = isApiRecipe;
         if (isApiRecipe) {
-            title = jsonObject.getString("title");
-            imageUrl = jsonObject.getString("image");
-            missedIngredientsCount = jsonObject.getInt("missedIngredientCount");
-            usedIngredientsCount = jsonObject.getInt("usedIngredientCount");
-            id = jsonObject.getInt("id");
+            if (isFullRecipe) {
+                title = jsonObject.getString("title");
+                imageUrl = jsonObject.getString("image");
+                id = jsonObject.getInt("id");
+                setNumberIngredientsFullRecipe(jsonObject);
+            } else {
+                title = jsonObject.getString("title");
+                imageUrl = jsonObject.getString("image");
+                missedIngredientsCount = jsonObject.getInt("missedIngredientCount");
+                usedIngredientsCount = jsonObject.getInt("usedIngredientCount");
+                id = jsonObject.getInt("id");
+            }
         } else {
             objectId = parseRecipe.getObjectId();
             title = parseRecipe.getTitle();
@@ -55,6 +62,28 @@ public class Recipe implements Serializable {
             instructions = parseRecipe.getInstructions();
             setNumberIngredients(parseRecipe);
         }
+    }
+
+    private void setNumberIngredientsFullRecipe(JSONObject jsonObject) throws JSONException {
+        List<String> ingredientsFullRecipe = new ArrayList<>();
+        JSONArray jsonIngredients = jsonObject.getJSONArray("extendedIngredients");
+        for (int i = 0; i < jsonIngredients.length(); i++) {
+            ingredientsFullRecipe.add(jsonIngredients.getJSONObject(i).getString("original"));
+        }
+        // find how many ingredients are in common
+        currentUser = ParseUser.getCurrentUser();
+        List<String> userIngredients = (List<String>) currentUser.get("ingredientsOwned");
+        usedIngredientsCount = 0;
+        for (int i = 0; i < ingredientsFullRecipe.size(); i++) {
+            for (int j = 0; j < userIngredients.size(); j++) {
+                String ingredient = ingredientsFullRecipe.get(i);
+                String userIngredient = userIngredients.get(j);
+                if (ingredient.equals(userIngredient)) {
+                    usedIngredientsCount++;
+                }
+            }
+        }
+        missedIngredientsCount = ingredientsFullRecipe.size() - usedIngredientsCount;
     }
 
     private void setNumberIngredients(ParseRecipe parseRecipe) {
@@ -78,7 +107,15 @@ public class Recipe implements Serializable {
     public static List<Recipe> fromJsonArray(JSONArray jsonArray) throws JSONException {
         List<Recipe> recipes = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
-            recipes.add(new Recipe(jsonArray.getJSONObject(i), null, true));
+            recipes.add(new Recipe(jsonArray.getJSONObject(i), null, true, false));
+        }
+        return recipes;
+    }
+
+    public static List<Recipe> fromJsonArrayFullRecipe(JSONArray jsonArray) throws JSONException {
+        List<Recipe> recipes = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            recipes.add(new Recipe(jsonArray.getJSONObject(i), null, true, true));
         }
         return recipes;
     }
@@ -86,7 +123,7 @@ public class Recipe implements Serializable {
     public static List<Recipe> fromParseRecipeArray(List<ParseRecipe> parseRecipes) throws JSONException {
         List<Recipe> recipes = new ArrayList<>();
         for (int i = 0; i < parseRecipes.size(); i++) {
-            recipes.add(new Recipe(null, parseRecipes.get(i), false));
+            recipes.add(new Recipe(null, parseRecipes.get(i), false, false));
         }
         return recipes;
     }
