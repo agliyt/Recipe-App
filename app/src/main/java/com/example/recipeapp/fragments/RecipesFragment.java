@@ -162,4 +162,9 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
         ft.addToBackStack(null);
         ft.commit();
     }
+
+    @Override
+    public void onFavoritesClicked(int position) {
+
+    }
 }

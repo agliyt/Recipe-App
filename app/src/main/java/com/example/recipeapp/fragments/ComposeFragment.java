@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
+import com.codepath.asynchttpclient.RequestParams;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
@@ -39,10 +40,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Headers;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -199,8 +202,10 @@ public class ComposeFragment extends Fragment {
         parseRecipe.setIngredients(ingredients);
         parseRecipe.setInstructions(instructions);
 
-        String URL = "https://api.spoonacular.com/recipes/parseIngredients?ingredientList=" + ingredients + "&servings=" + String.valueOf(servings) + "&includeNutrition=false&apiKey=" + REST_CONSUMER_KEY;
+        String URL = "https://api.spoonacular.com/recipes/parseIngredients?servings=" + String.valueOf(servings) + "&includeNutrition=false&apiKey=" + REST_CONSUMER_KEY;
         AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams params = new RequestParams();
+        params.put("ingredientList", ingredients);
         client.post(URL, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {

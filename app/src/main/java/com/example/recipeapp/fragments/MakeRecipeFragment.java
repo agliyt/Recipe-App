@@ -128,4 +128,9 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
         ft.addToBackStack(null);
         ft.commit();
     }
+
+    @Override
+    public void onFavoritesClicked(int position) {
+
+    }
 }

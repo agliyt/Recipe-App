@@ -69,4 +69,6 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.1'
 
     implementation "com.github.parse-community.Parse-SDK-Android:parse:1.18.5"
+
+    compile 'cz.msebera.android:httpclient:4.3.6'
 }

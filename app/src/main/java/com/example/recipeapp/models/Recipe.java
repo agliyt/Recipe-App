@@ -28,6 +28,7 @@ public class Recipe implements Serializable {
     int missedIngredientsCount;
     int usedIngredientsCount;
     int id;
+    String objectId;
     ParseUser currentUser;
     int servings;
     int readyInMinutes;
@@ -45,6 +46,7 @@ public class Recipe implements Serializable {
             usedIngredientsCount = jsonObject.getInt("usedIngredientCount");
             id = jsonObject.getInt("id");
         } else {
+            objectId = parseRecipe.getObjectId();
             title = parseRecipe.getTitle();
             image = parseRecipe.getImage();
             servings = parseRecipe.getServings();
@@ -93,6 +95,9 @@ public class Recipe implements Serializable {
         return fromApi;
     }
 
+    // REQUiRES isFromApi() == false
+    public String getObjectId() { return objectId; }
+
     public String getTitle() {
         return title;
     }
@@ -107,9 +112,7 @@ public class Recipe implements Serializable {
         return image;
     }
 
-    public int getMissedIngredientsCount() {
-        return missedIngredientsCount;
-    }
+    public int getMissedIngredientsCount() { return missedIngredientsCount; }
 
     public int getUsedIngredientsCount() {
         return usedIngredientsCount;
@@ -121,9 +124,7 @@ public class Recipe implements Serializable {
     }
 
     // REQUiRES isFromApi() == false
-    public int getServings() {
-        return servings;
-    }
+    public int getServings() { return servings; }
 
     // REQUiRES isFromApi() == false
     public int getReadyInMinutes() {
