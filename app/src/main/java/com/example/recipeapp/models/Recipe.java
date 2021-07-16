@@ -68,7 +68,7 @@ public class Recipe implements Serializable {
         List<String> ingredientsFullRecipe = new ArrayList<>();
         JSONArray jsonIngredients = jsonObject.getJSONArray("extendedIngredients");
         for (int i = 0; i < jsonIngredients.length(); i++) {
-            ingredientsFullRecipe.add(jsonIngredients.getJSONObject(i).getString("original"));
+            ingredientsFullRecipe.add(jsonIngredients.getJSONObject(i).getString("name"));
         }
         // find how many ingredients are in common
         currentUser = ParseUser.getCurrentUser();
