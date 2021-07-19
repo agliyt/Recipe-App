@@ -243,10 +243,10 @@ public class ComposeFragment extends Fragment {
 //        HashMap<String, String>[] array = new HashMap[1];
 //        array[0] = params;
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+        JsonObjectRequest volleyRequest = new JsonObjectRequest(URL, jsonBody, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
-                Log.i("VOLLEY", response);
+            public void onResponse(JSONObject response) {
+                Log.i("VOLLEY", response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
@@ -259,15 +259,17 @@ public class ComposeFragment extends Fragment {
                 return "application/x-www-form-urlencoded; charset=utf-8";
             }
 
-//            @Override
-//            public byte[] getBody() throws AuthFailureError {
-//                try {
-//                    return params.toString().getBytes("utf-8"); // requestBody == null ? null : requestBody.getBytes("utf-8");
-//                } catch (UnsupportedEncodingException uee) {
-//                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-//                    return null;
-//                }
-//            }
+            @Override
+            public byte[] getBody() { // throws AuthFailureError {
+                try {
+                    //return params.toString().getBytes("utf-8"); // requestBody == null ? null : requestBody.getBytes("utf-8");
+                    String s = "ingredientList=\"1 cup flour\"";
+                    return s.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                    return null;
+                }
+            }
 
                 // https://stackoverflow.com/a/30696882
                 @Override
@@ -280,18 +282,18 @@ public class ComposeFragment extends Fragment {
                     return params;
                 }
 
-            @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String responseString = "";
-                if (response != null) {
-                    responseString = String.valueOf(response.statusCode);
-                    // can get more details such as response.headers
-                }
-                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-            }
+//            @Override
+//            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+//                String responseString = "";
+//                if (response != null) {
+//                    responseString = String.valueOf(response.statusCode);
+//                    // can get more details such as response.headers
+//                }
+//                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+//            }
             };
 
-            requestQueue.add(stringRequest);
+            requestQueue.add(volleyRequest);
 
 
 //        AsyncHttpClient client = new AsyncHttpClient();
