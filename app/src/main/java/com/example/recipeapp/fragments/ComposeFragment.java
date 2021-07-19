@@ -229,10 +229,12 @@ public class ComposeFragment extends Fragment {
         String URL = "https://api.spoonacular.com/recipes/parseIngredients?apiKey=" + REST_CONSUMER_KEY;
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         JSONObject jsonBody = new JSONObject();
-        jsonBody.put("ingredientList", "1 cup flour");
+        jsonBody.put("ingredientList", "2 cups butter");
         jsonBody.put("servings", 3);
         jsonBody.put("includeNutrition", false);
         jsonBody.put("language", "en");
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(jsonBody);
         final String requestBody = jsonBody.toString();
 
         HashMap<String, String> params = new HashMap<String, String>();
@@ -243,9 +245,9 @@ public class ComposeFragment extends Fragment {
 //        HashMap<String, String>[] array = new HashMap[1];
 //        array[0] = params;
 
-        JsonObjectRequest volleyRequest = new JsonObjectRequest(URL, jsonBody, new Response.Listener<JSONObject>() {
+        JsonArrayRequest volleyRequest = new JsonArrayRequest(Request.Method.POST, URL, jsonArray, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(JSONArray response) {
                 Log.i("VOLLEY", response.toString());
             }
         }, new Response.ErrorListener() {
