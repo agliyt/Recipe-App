@@ -23,6 +23,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.RequestParams;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -38,11 +50,14 @@ import com.parse.SaveCallback;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Headers;
 import cz.msebera.android.httpclient.entity.StringEntity;
@@ -106,28 +121,36 @@ public class ComposeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String title = etTitle.getText().toString();
-                if (title.isEmpty()) {
-                    Toast.makeText(getContext(), "Title cannot be empty", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (photoFile == null || ivRecipeImage.getDrawable() == null) {
-                    Toast.makeText(getContext(), "There is no image!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                int servings = Integer.parseInt(etServings.getText().toString());
-                int readyInMinutes = Integer.parseInt(etReadyInMinutes.getText().toString());
-                String ingredients = etIngredients.getText().toString();
-                if (ingredients.isEmpty()) {
-                    Toast.makeText(getContext(), "Ingredients cannot be empty", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                String instructions = etInstructions.getText().toString();
-                if (instructions.isEmpty()) {
-                    Toast.makeText(getContext(), "Instructions cannot be empty", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+//                if (title.isEmpty()) {
+//                    Toast.makeText(getContext(), "Title cannot be empty", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//                if (photoFile == null || ivRecipeImage.getDrawable() == null) {
+//                    Toast.makeText(getContext(), "There is no image!", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//                int servings = Integer.parseInt(etServings.getText().toString());
+//                int readyInMinutes = Integer.parseInt(etReadyInMinutes.getText().toString());
+//                String ingredients = etIngredients.getText().toString();
+//                if (ingredients.isEmpty()) {
+//                    Toast.makeText(getContext(), "Ingredients cannot be empty", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//                String instructions = etInstructions.getText().toString();
+//                if (instructions.isEmpty()) {
+//                    Toast.makeText(getContext(), "Instructions cannot be empty", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+                int servings = 0;
+                int readyInMinutes = 0;
+                String ingredients = "";
+                String instructions = "";
                 ParseUser currentUser = ParseUser.getCurrentUser();
-                savePost(title, currentUser, photoFile, servings, readyInMinutes, ingredients, instructions);
+                try {
+                    savePost(title, currentUser, photoFile, servings, readyInMinutes, ingredients, instructions);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
                 // reload compose tab
                 bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
@@ -192,60 +215,128 @@ public class ComposeFragment extends Fragment {
         return file;
     }
 
-    private void savePost(String title, ParseUser currentUser, File photoFile, int servings, int readyInMinutes, String ingredients, String instructions) {
-        ParseRecipe parseRecipe = new ParseRecipe();
-        parseRecipe.setTitle(title);
-        parseRecipe.setImage(new ParseFile(photoFile));
-        parseRecipe.setAuthor(currentUser);
-        parseRecipe.setServings(servings);
-        parseRecipe.setReadyInMinutes(readyInMinutes);
-        parseRecipe.setIngredients(ingredients);
-        parseRecipe.setInstructions(instructions);
+    private void savePost(String title, ParseUser currentUser, File photoFile, int servings, int readyInMinutes, String ingredients, String instructions) throws JSONException {
+//        ParseRecipe parseRecipe = new ParseRecipe();
+//        parseRecipe.setTitle(title);
+//        parseRecipe.setImage(new ParseFile(photoFile));
+//        parseRecipe.setAuthor(currentUser);
+//        parseRecipe.setServings(servings);
+//        parseRecipe.setReadyInMinutes(readyInMinutes);
+//        parseRecipe.setIngredients(ingredients);
+//        parseRecipe.setInstructions(instructions);
 
-        String URL = "https://api.spoonacular.com/recipes/parseIngredients?servings=" + String.valueOf(servings) + "&includeNutrition=false&apiKey=" + REST_CONSUMER_KEY;
-        AsyncHttpClient client = new AsyncHttpClient();
-        RequestParams params = new RequestParams();
-        params.put("ingredientList", ingredients);
-        client.post(URL, new JsonHttpResponseHandler() {
+        // Using Volley for POST endpoints: https://stackoverflow.com/a/33578202
+        String URL = "https://api.spoonacular.com/recipes/parseIngredients?apiKey=" + REST_CONSUMER_KEY;
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("ingredientList", "1 cup flour");
+        jsonBody.put("servings", 3);
+        jsonBody.put("includeNutrition", false);
+        jsonBody.put("language", "en");
+        final String requestBody = jsonBody.toString();
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("ingredientList", "1 cup flour");
+        params.put("servings", "3");
+        params.put("includeNutrition", "false");
+        params.put("language", "en");
+//        HashMap<String, String>[] array = new HashMap[1];
+//        array[0] = params;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
             @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                JSONArray jsonArray = json.jsonArray;
-                List<String> ingredientsParsed = new ArrayList<>();
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    try {
-                        ingredientsParsed.add(jsonArray.getJSONObject(i).getString("name"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+            public void onResponse(String response) {
+                Log.i("VOLLEY", response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("VOLLEY", "VolleyError", error);
+            }
+        }) {
+            @Override
+            public String getBodyContentType() {
+                return "application/x-www-form-urlencoded; charset=utf-8";
+            }
+
+//            @Override
+//            public byte[] getBody() throws AuthFailureError {
+//                try {
+//                    return params.toString().getBytes("utf-8"); // requestBody == null ? null : requestBody.getBytes("utf-8");
+//                } catch (UnsupportedEncodingException uee) {
+//                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+//                    return null;
+//                }
+//            }
+
+                // https://stackoverflow.com/a/30696882
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("ingredientList", "1 cup flour");
+                    params.put("servings", "3");
+                    params.put("includeNutrition", "false");
+                    params.put("language", "en");
+                    return params;
                 }
-                parseRecipe.setIngredientsParsed(ingredientsParsed);
-
-                parseRecipe.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e != null) {
-                            Log.e(TAG, "Error while saving", e);
-                            Toast.makeText(getContext(), "Error while saving", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        Log.i(TAG, "Post save was successful");
-                        // reset all compose elements
-                        etTitle.setText("");
-                        ivRecipeImage.setImageResource(0);
-                        ivRecipeImage.setVisibility(View.GONE);
-                        etServings.setText("");
-                        etReadyInMinutes.setText("");
-                        etIngredients.setText("");
-                        etInstructions.setText("");
-                    }
-                });
-            }
 
             @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.d(TAG, "onFailure: " + response + throwable);
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                String responseString = "";
+                if (response != null) {
+                    responseString = String.valueOf(response.statusCode);
+                    // can get more details such as response.headers
+                }
+                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
             }
-        });
+            };
+
+            requestQueue.add(stringRequest);
+
+
+//        AsyncHttpClient client = new AsyncHttpClient();
+//        RequestParams params = new RequestParams();
+//        params.put("ingredientList", ingredients);
+//        client.post(URL, new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Headers headers, JSON json) {
+//                JSONArray jsonArray = json.jsonArray;
+//                List<String> ingredientsParsed = new ArrayList<>();
+//                for (int i = 0; i < jsonArray.length(); i++) {
+//                    try {
+//                        ingredientsParsed.add(jsonArray.getJSONObject(i).getString("name"));
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                parseRecipe.setIngredientsParsed(ingredientsParsed);
+//
+//                parseRecipe.saveInBackground(new SaveCallback() {
+//                    @Override
+//                    public void done(ParseException e) {
+//                        if (e != null) {
+//                            Log.e(TAG, "Error while saving", e);
+//                            Toast.makeText(getContext(), "Error while saving", Toast.LENGTH_SHORT).show();
+//                            return;
+//                        }
+//                        Log.i(TAG, "Post save was successful");
+//                        // reset all compose elements
+//                        etTitle.setText("");
+//                        ivRecipeImage.setImageResource(0);
+//                        ivRecipeImage.setVisibility(View.GONE);
+//                        etServings.setText("");
+//                        etReadyInMinutes.setText("");
+//                        etIngredients.setText("");
+//                        etInstructions.setText("");
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+//                Log.d(TAG, "onFailure: " + response + throwable);
+//            }
+//        });
     }
 
 }
