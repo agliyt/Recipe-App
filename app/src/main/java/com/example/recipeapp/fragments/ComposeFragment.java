@@ -150,7 +150,6 @@ public class ComposeFragment extends Fragment {
 
                 // reload compose tab
                 bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
-                Menu menu = bottomNavigationView.getMenu();
                 bottomNavigationView.setSelectedItemId(R.id.composeTab);
             }
         });
@@ -272,9 +271,8 @@ public class ComposeFragment extends Fragment {
             }
 
             @Override
-            public byte[] getBody() { // throws AuthFailureError {
+            public byte[] getBody() {
                 try {
-                    //return params.toString().getBytes("utf-8"); // requestBody == null ? null : requestBody.getBytes("utf-8");
                     String s = "ingredientList=\"" + ingredients + "\"";
                     return s.getBytes("utf-8");
                 } catch (UnsupportedEncodingException uee) {

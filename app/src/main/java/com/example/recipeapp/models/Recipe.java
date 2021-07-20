@@ -1,6 +1,9 @@
 package com.example.recipeapp.models;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
+
+import androidx.core.util.Preconditions;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -141,6 +144,7 @@ public class Recipe implements Serializable {
 
     // REQUiRES isFromApi() == true
     public String getImageUrl() {
+        // Preconditions.checkArgument(isFromApi());
         return imageUrl;
     }
 
