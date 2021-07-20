@@ -4,25 +4,41 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.recipeapp.R;
 
+import java.util.List;
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ShoppingListFragment extends Fragment {
+public class ShoppingListFragment extends IngredientsFragment {
 
-    public ShoppingListFragment() {
-        // Required empty public constructor
+    @Override
+    public void initializeIngredients() {
+        ingredients = (List<String>) currentUser.get("shoppingList");
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_shopping_list, container, false);
+    public void updateIngredients() {
+        if (currentUser != null) {
+            // Other attributes than "ingredientsOwned" will remain unchanged!
+            currentUser.put("shoppingList", ingredients);
+
+            // Saves the object.
+            currentUser.saveInBackground(e -> {
+                if(e==null){
+                    //Save successfull
+                    Log.i(TAG, "Save successful: " + ingredients.toString());
+                }else{
+                    // Something went wrong while saving
+                    Log.e(TAG, "Save unsuccessful", e);
+                }
+            });
+        }
     }
 }

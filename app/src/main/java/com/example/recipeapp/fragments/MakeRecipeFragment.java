@@ -17,24 +17,17 @@ import android.widget.Button;
 
 import com.example.recipeapp.R;
 import com.example.recipeapp.adapters.ComposeAdapter;
-import com.example.recipeapp.adapters.RecipesAdapter;
-import com.example.recipeapp.helpers.Favorites;
+import com.example.recipeapp.helpers.FavoritesHelper;
 import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static androidx.fragment.app.FragmentKt.setFragmentResultListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -144,7 +137,7 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
     @Override
     public void onFavoritesClicked(int position) {
         final Recipe recipe = allRecipes.get(position);
-        Favorites.favoriteRecipe(recipe);
+        FavoritesHelper.favoriteRecipe(recipe);
         adapter.notifyDataSetChanged();
     }
 }

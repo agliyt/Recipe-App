@@ -32,13 +32,13 @@ public class IngredientsFragment extends Fragment {
 
     public static final String TAG = "IngredientsFragment";
 
-    private List<String> ingredients;
+    protected List<String> ingredients;
 
     private Button btnAdd;
     private EditText etIngredient;
     private RecyclerView rvIngredients;
     private IngredientsAdapter ingredientsAdapter;
-    private ParseUser currentUser;
+    protected ParseUser currentUser;
 
     public IngredientsFragment() {
         // Required empty public constructor
@@ -59,7 +59,7 @@ public class IngredientsFragment extends Fragment {
         etIngredient = view.findViewById(R.id.etIngredient);
         rvIngredients = view.findViewById(R.id.rvIngredients);
         currentUser = ParseUser.getCurrentUser();
-        ingredients = (List<String>) currentUser.get("ingredientsOwned");
+        initializeIngredients();
         Log.i(TAG, ingredients.toString());
 
         IngredientsAdapter.OnLongClickListener onLongClickListener = new IngredientsAdapter.OnLongClickListener() {
@@ -90,6 +90,10 @@ public class IngredientsFragment extends Fragment {
                 Toast.makeText(getContext().getApplicationContext(), "Ingredient was added", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void initializeIngredients() {
+        ingredients = (List<String>) currentUser.get("ingredientsOwned");
     }
 
     public void updateIngredients() {

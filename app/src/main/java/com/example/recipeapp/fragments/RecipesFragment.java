@@ -1,6 +1,5 @@
 package com.example.recipeapp.fragments;
 
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,7 +18,7 @@ import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
-import com.example.recipeapp.helpers.Favorites;
+import com.example.recipeapp.helpers.FavoritesHelper;
 import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
 import com.example.recipeapp.adapters.RecipesAdapter;
@@ -168,7 +167,7 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
     @Override
     public void onFavoritesClicked(int position) {
         final Recipe recipe = allRecipes.get(position);
-        Favorites.favoriteRecipe(recipe);
+        FavoritesHelper.favoriteRecipe(recipe);
         adapter.notifyDataSetChanged();
     }
 }

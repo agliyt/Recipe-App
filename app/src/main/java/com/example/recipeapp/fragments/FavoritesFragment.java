@@ -19,7 +19,7 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
 import com.example.recipeapp.adapters.RecipesAdapter;
-import com.example.recipeapp.helpers.Favorites;
+import com.example.recipeapp.helpers.FavoritesHelper;
 import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
 import com.parse.FindCallback;
@@ -27,7 +27,6 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -153,7 +152,7 @@ public class FavoritesFragment extends Fragment implements RecipesAdapter.OnClic
     @Override
     public void onFavoritesClicked(int position) {
         final Recipe recipe = allRecipes.get(position);
-        Favorites.favoriteRecipe(recipe);
+        FavoritesHelper.favoriteRecipe(recipe);
         allRecipes.remove(position);
         adapter.notifyItemRemoved(position);
     }

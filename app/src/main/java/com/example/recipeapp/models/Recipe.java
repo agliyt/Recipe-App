@@ -37,6 +37,7 @@ public class Recipe implements Serializable {
     int readyInMinutes;
     String ingredients;
     String instructions;
+    List<String> missedIngredients;
 
 
     // jsonObject == null if isApiRecipe == false; parseRecipe == null if isApiRecipe == true
@@ -54,6 +55,12 @@ public class Recipe implements Serializable {
                 missedIngredientsCount = jsonObject.getInt("missedIngredientCount");
                 usedIngredientsCount = jsonObject.getInt("usedIngredientCount");
                 id = jsonObject.getInt("id");
+
+                missedIngredients = new ArrayList<>();
+                JSONArray missedJsonArray = jsonObject.getJSONArray("missedIngredients");
+                for (int i = 0; i < missedJsonArray.length(); i++) {
+                    missedIngredients.add(missedJsonArray.getJSONObject(i).getString("name"));
+                }
             }
         } else {
             objectId = parseRecipe.getObjectId();
@@ -76,16 +83,23 @@ public class Recipe implements Serializable {
         // find how many ingredients are in common
         currentUser = ParseUser.getCurrentUser();
         List<String> userIngredients = (List<String>) currentUser.get("ingredientsOwned");
+        missedIngredients = new ArrayList<>();
+        for (String ing: userIngredients) {
+            missedIngredients.add(ing);
+        }
         usedIngredientsCount = 0;
+        List<String> usedIngredients = new ArrayList<>();
         for (int i = 0; i < ingredientsFullRecipe.size(); i++) {
             for (int j = 0; j < userIngredients.size(); j++) {
                 String ingredient = ingredientsFullRecipe.get(i);
                 String userIngredient = userIngredients.get(j);
                 if (ingredient.equals(userIngredient)) {
+                    usedIngredients.add(ingredient);
                     usedIngredientsCount++;
                 }
             }
         }
+        missedIngredients.removeAll(usedIngredients);
         missedIngredientsCount = ingredientsFullRecipe.size() - usedIngredientsCount;
     }
 
@@ -94,16 +108,23 @@ public class Recipe implements Serializable {
         // find how many ingredients are in common
         currentUser = ParseUser.getCurrentUser();
         List<String> userIngredients = (List<String>) currentUser.get("ingredientsOwned");
+        missedIngredients = new ArrayList<>();
+        for (String ing: userIngredients) {
+            missedIngredients.add(ing);
+        }
         usedIngredientsCount = 0;
+        List<String> usedIngredients = new ArrayList<>();
         for (int i = 0; i < ingredientsParsed.size(); i++) {
             for (int j = 0; j < userIngredients.size(); j++) {
                 String ingredient = ingredientsParsed.get(i);
                 String userIngredient = userIngredients.get(j);
                 if (ingredient.equals(userIngredient)) {
+                    usedIngredients.add(ingredient);
                     usedIngredientsCount++;
                 }
             }
         }
+        missedIngredients.removeAll(usedIngredients);
         missedIngredientsCount = ingredientsParsed.size() - usedIngredientsCount;
     }
 
@@ -180,6 +201,10 @@ public class Recipe implements Serializable {
     // REQUiRES isFromApi() == false
     public String getInstructions() {
         return instructions;
+    }
+
+    public List<String> getMissedIngredients() {
+        return missedIngredients;
     }
 
 }
