@@ -92,6 +92,14 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
             }
         });
 
+        try {
+            Bundle bundle = getArguments();
+            Recipe recipe = (Recipe) bundle.getSerializable("recipe");
+            allRecipes.add(0,recipe);
+            adapter.notifyItemInserted(0);
+        } catch (Exception e) {
+            Log.d(TAG, "Exception: " + e);
+        }
     }
 
     protected void queryUserRecipes() {

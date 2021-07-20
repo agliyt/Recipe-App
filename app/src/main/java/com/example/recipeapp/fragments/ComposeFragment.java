@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -41,6 +42,7 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
 import com.example.recipeapp.models.ParseRecipe;
+import com.example.recipeapp.models.Recipe;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -83,7 +85,6 @@ public class ComposeFragment extends Fragment {
     private EditText etInstructions;
     private Button btnSubmit;
     private File photoFile;
-    BottomNavigationView bottomNavigationView;
 
     public ComposeFragment() {
         // Required empty public constructor
@@ -143,14 +144,23 @@ public class ComposeFragment extends Fragment {
                 }
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 try {
-                    savePost(title, currentUser, photoFile, servings, readyInMinutes, ingredients, instructions);
+                    ParseRecipe parseRecipe = savePost(title, currentUser, photoFile, servings, readyInMinutes, ingredients, instructions);
+                    List<ParseRecipe> recipeList = new ArrayList<>();
+                    recipeList.add(parseRecipe);
+                    final Recipe recipe = Recipe.fromParseRecipeArray(recipeList).get(0);
+                    FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    MakeRecipeFragment makeRecipeFragment = new MakeRecipeFragment();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("recipe", recipe);
+                    makeRecipeFragment.setArguments(bundle);
+                    ft.replace(R.id.nsvContainer, makeRecipeFragment);
+                    ft.addToBackStack(null);
+                    ft.commit();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                // reload compose tab
-                bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
-                bottomNavigationView.setSelectedItemId(R.id.composeTab);
             }
         });
     }
@@ -210,7 +220,7 @@ public class ComposeFragment extends Fragment {
         return file;
     }
 
-    private void savePost(String title, ParseUser currentUser, File photoFile, int servings, int readyInMinutes, String ingredients, String instructions) throws JSONException {
+    private ParseRecipe savePost(String title, ParseUser currentUser, File photoFile, int servings, int readyInMinutes, String ingredients, String instructions) throws JSONException {
         ParseRecipe parseRecipe = new ParseRecipe();
         parseRecipe.setTitle(title);
         parseRecipe.setImage(new ParseFile(photoFile));
@@ -293,5 +303,7 @@ public class ComposeFragment extends Fragment {
             }
         };
         requestQueue.add(volleyRequest);
+
+        return parseRecipe;
     }
 }
