@@ -84,15 +84,6 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
                         .commit();
             }
         });
-
-        try {
-            Bundle bundle = getArguments();
-            Recipe recipe = (Recipe) bundle.getSerializable("recipe");
-            allRecipes.add(0,recipe);
-            adapter.notifyItemInserted(0);
-        } catch (Exception e) {
-            Log.d(TAG, "Exception: " + e);
-        }
     }
 
     protected void queryUserRecipes() {
@@ -107,7 +98,6 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
                     return;
                 }
                 try {
-                    Log.i(TAG, parseRecipes.get(0).getTitle());
                     allRecipes.clear();
                     allRecipes.addAll(Recipe.fromParseRecipeArray(parseRecipes));
                 } catch (JSONException jsonException) {

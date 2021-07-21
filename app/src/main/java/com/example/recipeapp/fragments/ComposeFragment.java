@@ -144,20 +144,20 @@ public class ComposeFragment extends Fragment {
                 }
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 try {
-                    ParseRecipe parseRecipe = savePost(title, currentUser, photoFile, servings, readyInMinutes, ingredients, instructions);
-                    List<ParseRecipe> recipeList = new ArrayList<>();
-                    recipeList.add(parseRecipe);
-                    final Recipe recipe = Recipe.fromParseRecipeArray(recipeList).get(0);
-                    FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
-                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    MakeRecipeFragment makeRecipeFragment = new MakeRecipeFragment();
-
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("recipe", recipe);
-                    makeRecipeFragment.setArguments(bundle);
-                    ft.replace(R.id.nsvContainer, makeRecipeFragment);
-                    ft.addToBackStack(null);
-                    ft.commit();
+                    savePost(title, currentUser, photoFile, servings, readyInMinutes, ingredients, instructions);
+//                    List<ParseRecipe> recipeList = new ArrayList<>();
+//                    recipeList.add(parseRecipe);
+//                    final Recipe recipe = Recipe.fromParseRecipeArray(recipeList).get(0);
+//                    FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
+//                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//                    MakeRecipeFragment makeRecipeFragment = new MakeRecipeFragment();
+//
+//                    Bundle bundle = new Bundle();
+//                    bundle.putSerializable("recipe", recipe);
+//                    makeRecipeFragment.setArguments(bundle);
+//                    ft.replace(R.id.nsvContainer, makeRecipeFragment);
+//                    ft.addToBackStack(null);
+//                    ft.commit();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -220,7 +220,7 @@ public class ComposeFragment extends Fragment {
         return file;
     }
 
-    private ParseRecipe savePost(String title, ParseUser currentUser, File photoFile, int servings, int readyInMinutes, String ingredients, String instructions) throws JSONException {
+    private void savePost(String title, ParseUser currentUser, File photoFile, int servings, int readyInMinutes, String ingredients, String instructions) throws JSONException {
         ParseRecipe parseRecipe = new ParseRecipe();
         parseRecipe.setTitle(title);
         parseRecipe.setImage(new ParseFile(photoFile));
@@ -266,6 +266,15 @@ public class ComposeFragment extends Fragment {
                         etReadyInMinutes.setText("");
                         etIngredients.setText("");
                         etInstructions.setText("");
+
+                        // go back to make recipes fragment
+                        FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
+                        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                        MakeRecipeFragment makeRecipeFragment = new MakeRecipeFragment();
+
+                        ft.replace(R.id.flRecipesContainer, makeRecipeFragment);
+                        ft.addToBackStack(null);
+                        ft.commit();
                     }
                 });
             }
@@ -303,7 +312,5 @@ public class ComposeFragment extends Fragment {
             }
         };
         requestQueue.add(volleyRequest);
-
-        return parseRecipe;
     }
 }
