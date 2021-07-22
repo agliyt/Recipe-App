@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,8 +19,10 @@ import android.widget.Button;
 import com.example.recipeapp.R;
 import com.example.recipeapp.adapters.ComposeAdapter;
 import com.example.recipeapp.helpers.FavoritesHelper;
+import com.example.recipeapp.helpers.SwipeToDeleteCallback;
 import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
+import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -68,6 +71,10 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
         rvUserRecipes.setAdapter(adapter);
         // set layout manager on recycler view
         rvUserRecipes.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // set up swipe to delete
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter));
+        itemTouchHelper.attachToRecyclerView(rvUserRecipes);
 
         queryUserRecipes();
 

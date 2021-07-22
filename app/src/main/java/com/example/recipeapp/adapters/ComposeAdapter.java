@@ -15,8 +15,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.recipeapp.MainActivity;
 import com.example.recipeapp.R;
+import com.example.recipeapp.fragments.MakeRecipeFragment;
+import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
+import com.google.android.material.snackbar.Snackbar;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.List;
@@ -27,6 +32,47 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
     private List<Recipe> recipes;
     private List<String> favoriteUserRecipes;
     private ParseUser currentUser;
+    private Recipe recentlyDeletedRecipe;
+    private int recentlyDeletedRecipePosition;
+
+    public void deleteItem(int position) {
+        recentlyDeletedRecipe = recipes.get(position);
+        recentlyDeletedRecipePosition = position;
+        recipes.remove(position);
+        notifyItemRemoved(position);
+        showUndoSnackbar();
+
+        // after undo snackbar passes, actually delete recipe from Parse
+        ParseQuery<ParseRecipe> query = ParseQuery.getQuery(ParseRecipe.class);
+        query.getInBackground(recentlyDeletedRecipe.getObjectId(), (object, e) -> {
+            if (e == null) {
+                // Deletes the fetched ParseObject from the database
+                object.deleteInBackground(e2 -> {
+                    if(e2==null){
+                        Log.i("ComposeAdapter", "Success deleting recipe: " + recentlyDeletedRecipe.getTitle());
+                    }else{
+                        //Something went wrong while deleting the Object
+                        Log.e("ComposeAdapter", "Issue with deleting recipe: " + recentlyDeletedRecipe.getTitle(), e);
+                    }
+                });
+            }else{
+                //Something went wrong while retrieving the Object
+                Log.e("ComposeAdapter", "Issue with getting recipe: " + recentlyDeletedRecipe.getTitle(), e);
+            }
+        });
+    }
+
+    private void showUndoSnackbar() {
+        View view = ((MainActivity) mContext).findViewById(R.id.rvUserRecipes);
+        Snackbar snackbar = Snackbar.make(view, "Deleted", Snackbar.LENGTH_LONG);
+        snackbar.setAction("Undo", v -> undoDelete());
+        snackbar.show();
+    }
+
+    private void undoDelete() {
+        recipes.add(recentlyDeletedRecipePosition, recentlyDeletedRecipe);
+        notifyItemInserted(recentlyDeletedRecipePosition);
+    }
 
     public interface OnClickListener{
         void onItemClicked(int position);
@@ -58,6 +104,10 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
     @Override
     public int getItemCount() {
         return recipes.size();
+    }
+
+    public Context getmContext() {
+        return mContext;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
