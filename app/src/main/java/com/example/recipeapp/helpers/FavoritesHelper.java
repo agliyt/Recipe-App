@@ -18,8 +18,10 @@ public class FavoritesHelper {
         List<String> favoriteApiRecipes;
         List<String> favoriteUserRecipes;
         // handle whether recipe is in favorites or not
+        Log.i(TAG, missedIngredients.toString());
         if (recipe.isFromApi()) {
             favoriteApiRecipes = (List<String>) currentUser.get("recipesFavoritedAPI");
+            Log.i(TAG, missedIngredients.toString());
             if (favoriteApiRecipes.contains(String.valueOf(recipe.getId()))) { // already favorited
                 favoriteApiRecipes.remove(String.valueOf(recipe.getId()));
                 for (int i = 0; i < missedIngredients.size(); i++) {

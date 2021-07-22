@@ -85,7 +85,7 @@ public class Recipe implements Serializable {
         currentUser = ParseUser.getCurrentUser();
         List<String> userIngredients = (List<String>) currentUser.get("ingredientsOwned");
         missedIngredients = new ArrayList<>();
-        for (String ing: userIngredients) {
+        for (String ing: ingredientsFullRecipe) {
             missedIngredients.add(ing);
         }
         usedIngredientsCount = 0;
@@ -110,7 +110,7 @@ public class Recipe implements Serializable {
         currentUser = ParseUser.getCurrentUser();
         List<String> userIngredients = (List<String>) currentUser.get("ingredientsOwned");
         missedIngredients = new ArrayList<>();
-        for (String ing: userIngredients) {
+        for (String ing: ingredientsParsed) {
             missedIngredients.add(ing);
         }
         usedIngredientsCount = 0;
