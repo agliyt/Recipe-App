@@ -145,19 +145,6 @@ public class ComposeFragment extends Fragment {
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 try {
                     savePost(title, currentUser, photoFile, servings, readyInMinutes, ingredients, instructions);
-//                    List<ParseRecipe> recipeList = new ArrayList<>();
-//                    recipeList.add(parseRecipe);
-//                    final Recipe recipe = Recipe.fromParseRecipeArray(recipeList).get(0);
-//                    FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
-//                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-//                    MakeRecipeFragment makeRecipeFragment = new MakeRecipeFragment();
-//
-//                    Bundle bundle = new Bundle();
-//                    bundle.putSerializable("recipe", recipe);
-//                    makeRecipeFragment.setArguments(bundle);
-//                    ft.replace(R.id.nsvContainer, makeRecipeFragment);
-//                    ft.addToBackStack(null);
-//                    ft.commit();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

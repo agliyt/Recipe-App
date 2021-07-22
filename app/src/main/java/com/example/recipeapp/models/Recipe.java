@@ -38,6 +38,7 @@ public class Recipe implements Serializable {
     String ingredients;
     String instructions;
     List<String> missedIngredients;
+    List<String> ingredientsParsed;
 
 
     // jsonObject == null if isApiRecipe == false; parseRecipe == null if isApiRecipe == true
@@ -104,7 +105,7 @@ public class Recipe implements Serializable {
     }
 
     private void setNumberIngredients(ParseRecipe parseRecipe) {
-        List<String> ingredientsParsed = parseRecipe.getIngredientsParsed();
+        ingredientsParsed = parseRecipe.getIngredientsParsed();
         // find how many ingredients are in common
         currentUser = ParseUser.getCurrentUser();
         List<String> userIngredients = (List<String>) currentUser.get("ingredientsOwned");
@@ -206,5 +207,8 @@ public class Recipe implements Serializable {
     public List<String> getMissedIngredients() {
         return missedIngredients;
     }
+
+    // REQUiRES isFromApi() == false
+    public List<String> getIngredientsParsed() { return ingredientsParsed; }
 
 }

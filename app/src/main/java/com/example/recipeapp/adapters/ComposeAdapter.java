@@ -10,8 +10,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -21,8 +23,11 @@ import com.example.recipeapp.fragments.MakeRecipeFragment;
 import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
 import com.google.android.material.snackbar.Snackbar;
+import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.List;
 
@@ -72,6 +77,28 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
     private void undoDelete() {
         recipes.add(recentlyDeletedRecipePosition, recentlyDeletedRecipe);
         notifyItemInserted(recentlyDeletedRecipePosition);
+
+        // add recipe back to parse
+        ParseRecipe parseRecipe = new ParseRecipe();
+        parseRecipe.setTitle(recentlyDeletedRecipe.getTitle());
+        parseRecipe.setImage(recentlyDeletedRecipe.getImage());
+        parseRecipe.setAuthor(currentUser);
+        parseRecipe.setServings(recentlyDeletedRecipe.getServings());
+        parseRecipe.setReadyInMinutes(recentlyDeletedRecipe.getReadyInMinutes());
+        parseRecipe.setIngredients(recentlyDeletedRecipe.getIngredients());
+        parseRecipe.setInstructions(recentlyDeletedRecipe.getInstructions());
+        parseRecipe.setIngredientsParsed(recentlyDeletedRecipe.getIngredientsParsed());
+
+        parseRecipe.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e("ComposeAdapter", "Error while saving", e);
+                    return;
+                }
+                Log.i("ComposeAdapter", "Post save was successful");
+            }
+        });
     }
 
     public interface OnClickListener{
