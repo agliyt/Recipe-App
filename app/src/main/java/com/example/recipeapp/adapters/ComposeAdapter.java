@@ -188,11 +188,9 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
                     FavoritesHelper.favoriteRecipe(recipe);
                     notifyItemChanged(getAdapterPosition());
                 }
-            });
 
-            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onSingleTapConfirmed(MotionEvent e) {
                     onClickListener.onItemClicked(getAdapterPosition());
                 }
             });

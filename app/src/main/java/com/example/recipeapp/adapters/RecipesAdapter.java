@@ -122,11 +122,9 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
                     FavoritesHelper.favoriteRecipe(recipe);
                     notifyItemChanged(getAdapterPosition());
                 }
-            });
 
-            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onSingleTapConfirmed(MotionEvent e) {
                     onClickListener.onItemClicked(getAdapterPosition());
                 }
             });
