@@ -29,6 +29,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.json.JSONException;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHolder> {
@@ -75,9 +78,6 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
     }
 
     private void undoDelete() {
-        recipes.add(recentlyDeletedRecipePosition, recentlyDeletedRecipe);
-        notifyItemInserted(recentlyDeletedRecipePosition);
-
         // add recipe back to parse
         ParseRecipe parseRecipe = new ParseRecipe();
         parseRecipe.setTitle(recentlyDeletedRecipe.getTitle());
@@ -97,6 +97,14 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
                     return;
                 }
                 Log.i("ComposeAdapter", "Post save was successful");
+                List<ParseRecipe> recipeList = new ArrayList<>();
+                recipeList.add(parseRecipe);
+                try {
+                    recipes.add(recentlyDeletedRecipePosition, Recipe.fromParseRecipeArray(recipeList).get(0));
+                } catch (JSONException jsonException) {
+                    jsonException.printStackTrace();
+                }
+                notifyItemInserted(recentlyDeletedRecipePosition);
             }
         });
     }
