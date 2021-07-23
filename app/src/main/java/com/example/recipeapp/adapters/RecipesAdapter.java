@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -15,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.recipeapp.R;
+import com.example.recipeapp.helpers.FavoritesHelper;
+import com.example.recipeapp.helpers.OnDoubleTapListener;
 import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
 import com.parse.ParseUser;
@@ -112,6 +115,14 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
                     btnFavorite.setBackgroundTintList(ColorStateList.valueOf(mContext.getResources().getColor(android.R.color.black)));
                 }
             }
+
+            itemView.setOnTouchListener(new OnDoubleTapListener(mContext) {
+                @Override
+                public void onDoubleTap(MotionEvent e) {
+                    FavoritesHelper.favoriteRecipe(recipe);
+                    notifyItemChanged(getAdapterPosition());
+                }
+            });
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
