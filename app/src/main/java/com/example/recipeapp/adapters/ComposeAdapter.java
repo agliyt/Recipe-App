@@ -26,6 +26,8 @@ import com.example.recipeapp.helpers.OnDoubleTapListener;
 import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
 import com.google.android.material.snackbar.Snackbar;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseQuery;
@@ -153,7 +155,7 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
         private TextView tvTitlePreview;
         private ImageView ivImagePreview;
         private TextView tvIngredientsCount;
-        private ImageButton btnFavorite;
+        private LikeButton btnFavorite;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -175,11 +177,9 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
             favoriteUserRecipes = (List<String>) currentUser.get("recipesFavoritedUser");
             // handle whether recipe is in favorites or not
             if (favoriteUserRecipes.contains(recipe.getObjectId())) {
-                btnFavorite.setBackgroundResource(R.drawable.ic_outline_star_24);
-                btnFavorite.setBackgroundTintList(ColorStateList.valueOf(mContext.getResources().getColor(android.R.color.holo_orange_light)));
+                btnFavorite.setLiked(true);
             } else {
-                btnFavorite.setBackgroundResource(R.drawable.ic_round_star_outline_24);
-                btnFavorite.setBackgroundTintList(ColorStateList.valueOf(mContext.getResources().getColor(android.R.color.black)));
+                btnFavorite.setLiked(false);
             }
 
             itemView.setOnTouchListener(new OnDoubleTapListener(mContext) {
@@ -195,9 +195,14 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
                 }
             });
 
-            btnFavorite.setOnClickListener(new View.OnClickListener() {
+            btnFavorite.setOnLikeListener(new OnLikeListener() {
                 @Override
-                public void onClick(View v) {
+                public void liked(LikeButton likeButton) {
+                    onClickListener.onFavoritesClicked(getAdapterPosition());
+                }
+
+                @Override
+                public void unLiked(LikeButton likeButton) {
                     onClickListener.onFavoritesClicked(getAdapterPosition());
                 }
             });
