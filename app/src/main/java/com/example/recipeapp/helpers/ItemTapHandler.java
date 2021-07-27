@@ -5,20 +5,18 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-/*
-Usage:
-  myView.setOnTouchListener(new OnDoubleTapListener(this) {
-    @Override
-    public void onDoubleTap(MotionEvent e) {
-      Toast.makeText(MainActivity.this, "Double Tap", Toast.LENGTH_SHORT).show();
+public class ItemTapHandler implements View.OnTouchListener {
+
+    public interface Listener {
+        void onTap();
+        void onDoubleTap();
     }
-  });
-*/
-public class OnDoubleTapListener implements View.OnTouchListener {
 
     private GestureDetector gestureDetector;
+    private Listener mListener;
 
-    public OnDoubleTapListener(Context c) {
+    public ItemTapHandler(Context c, Listener listener) {
+        mListener = listener;
         gestureDetector = new GestureDetector(c, new GestureListener());
     }
 
@@ -35,22 +33,14 @@ public class OnDoubleTapListener implements View.OnTouchListener {
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            OnDoubleTapListener.this.onDoubleTap(e);
+            mListener.onDoubleTap();
             return super.onDoubleTap(e);
         }
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            OnDoubleTapListener.this.onSingleTapConfirmed(e);
+            mListener.onTap();
             return super.onSingleTapConfirmed(e);
         }
-    }
-
-    public void onDoubleTap(MotionEvent e) {
-        // To be overridden when implementing listener
-    }
-
-    public void onSingleTapConfirmed(MotionEvent e) {
-        // To be overridden when implementing listener
     }
 }

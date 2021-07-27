@@ -39,12 +39,14 @@
         android:textSize="12sp"
         tools:text="Missed Ingredients: 1     Used Ingredients: 1" />
 
-    <ImageButton
+    <com.like.LikeButton
+        app:icon_type="Star"
+        app:icon_size="7dp"
+        app:is_enabled="true"
         android:id="@+id/btnFavorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="0dp"
-        android:backgroundTint="#00FFFFFF" />
+        android:layout_marginEnd="0dp" />
 
 </RelativeLayout>

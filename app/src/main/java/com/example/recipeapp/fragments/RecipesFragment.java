@@ -168,6 +168,5 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
     public void onFavoritesClicked(int position) {
         final Recipe recipe = allRecipes.get(position);
         FavoritesHelper.favoriteRecipe(recipe);
-        adapter.notifyDataSetChanged();
     }
 }

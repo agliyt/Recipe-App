@@ -135,6 +135,5 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
     public void onFavoritesClicked(int position) {
         final Recipe recipe = allRecipes.get(position);
         FavoritesHelper.favoriteRecipe(recipe);
-        adapter.notifyDataSetChanged();
     }
 }
