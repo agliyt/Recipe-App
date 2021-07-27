@@ -128,7 +128,6 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
                     onClickListener.onFavoritesClicked(getAdapterPosition());
                 }
 
-                @Override
                 public void unLiked(LikeButton likeButton) {
                     onClickListener.onFavoritesClicked(getAdapterPosition());
                 }

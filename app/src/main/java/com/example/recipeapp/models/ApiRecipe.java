@@ -1,2 +1,4 @@
-package com.example.recipeapp.models;public class ApiRecipe {
+package com.example.recipeapp.models;
+
+public class ApiRecipe extends Recipe {
 }
