@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.example.recipeapp.fragments.IngredientsFragment;
 import com.example.recipeapp.fragments.MakeRecipeFragment;
 import com.example.recipeapp.fragments.RecipesFragment;
 import com.example.recipeapp.fragments.ShoppingListFragment;
+import com.example.recipeapp.helpers.ReceiptProcessor;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.ParseUser;
 
@@ -94,6 +96,25 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
             finish();
+            return true;
+        } else if (item.getItemId() == R.id.receiptCamera) {
+            Log.i(TAG, "receipt camera button clicked");
+            ReceiptProcessor.processReceipt();
+
+            Menu menu = bottomNavigationView.getMenu();
+            menu.findItem(R.id.ingredientsTab).setIcon(R.drawable.ic_round_view_list_24);
+            menu.findItem(R.id.recipesTab).setIcon(R.drawable.ic_outline_fastfood_24);
+            menu.findItem(R.id.composeTab).setIcon(R.drawable.ic_outline_create_24);
+            menu.findItem(R.id.shoppingListTab).setIcon(R.drawable.ic_outline_shopping_cart_24);
+            menu.findItem(R.id.favoritesTab).setIcon(R.drawable.ic_round_star_outline_24);
+
+            FragmentTransaction ft =  fragmentManager.beginTransaction();
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            IngredientsFragment ingredientsFragment = new IngredientsFragment();
+
+            ft.replace(R.id.flRecipesContainer, ingredientsFragment);
+            ft.addToBackStack(null);
+            ft.commit();
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -3,6 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/receiptCamera"
+        android:icon="@drawable/ic_baseline_photo_camera_24"
+        android:title="Camera"
+        app:showAsAction="always"
+        app:iconTint="@android:color/white"/>
+
+    <item
         android:id="@+id/logout"
         android:icon="@drawable/logout"
         android:title="Logout"

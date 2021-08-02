@@ -63,10 +63,6 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
 
         allRecipes = new ArrayList<>();
         adapter = new ComposeAdapter(getContext(), allRecipes, MakeRecipeFragment.this);
-
-        // create data for one row in list
-        // create adapter
-        // create data source
         // set adapter on recycler view
         rvUserRecipes.setAdapter(adapter);
         // set layout manager on recycler view

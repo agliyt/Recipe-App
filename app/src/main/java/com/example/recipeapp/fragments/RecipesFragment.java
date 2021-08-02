@@ -73,10 +73,6 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
 
         allRecipes = new ArrayList<>();
         adapter = new RecipesAdapter(getContext(), allRecipes, RecipesFragment.this);
-
-        // create data for one row in list
-        // create adapter
-        // create data source
         // set adapter on recycler view
         rvRecipes.setAdapter(adapter);
         // set layout manager on recycler view
