@@ -22,6 +22,7 @@ import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.MainActivity;
 import com.example.recipeapp.R;
 import com.example.recipeapp.cache.Cache;
+import com.example.recipeapp.helpers.ApiUrlHelper;
 import com.example.recipeapp.models.Recipe;
 import com.example.recipeapp.models.RecipeDetails;
 
@@ -39,8 +40,6 @@ import okhttp3.Headers;
 public class RecipeDetailsFragment extends Fragment {
 
     public static final String TAG = "RecipeDetailsFragment";
-    public static final String REST_CONSUMER_KEY = BuildConfig.CONSUMER_KEY;
-    public static String RECIPE_DETAILS_URL;
 
     private Cache cache;
     private Recipe recipe;
@@ -60,6 +59,16 @@ public class RecipeDetailsFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        recipe = (Recipe) bundle.getSerializable("recipe");
+        recipeId = recipe.getId();
+
+        cache = Cache.getCache();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -69,12 +78,6 @@ public class RecipeDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        Bundle bundle = getArguments();
-        recipe = (Recipe) bundle.getSerializable("recipe");
-        recipeId = recipe.getId();
-
-        cache = Cache.getCache();
 
         tvTitle = view.findViewById(R.id.tvTitle);
         ivImage = view.findViewById(R.id.ivImage);
@@ -102,29 +105,7 @@ public class RecipeDetailsFragment extends Fragment {
         if (recipe.isFromApi()) {
             recipeDetails = cache.get(recipeId);
             if (recipeDetails == null) { // if recipeDetails is not in cache
-                RECIPE_DETAILS_URL = "https://api.spoonacular.com/recipes/" + String.valueOf(recipeId) + "/information?includeNutrition=false&apiKey=" + REST_CONSUMER_KEY;
-                Log.i(TAG, RECIPE_DETAILS_URL);
-
-                AsyncHttpClient client = new AsyncHttpClient();
-                client.get(RECIPE_DETAILS_URL, new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Headers headers, JSON json) {
-                        JSONObject jsonObject = json.jsonObject;
-                        try {
-                            recipeDetails = new RecipeDetails(jsonObject);
-                            setRecipeDetails();
-                            cache.put(recipeId, recipeDetails);
-
-                        } catch (JSONException e) {
-                            Log.e(TAG, "Hit json exception", e);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                        Log.e(TAG, "onFailure", throwable);
-                    }
-                });
+                getRecipeDetails();
             } else { // recipeDetails found in cache
                 setRecipeDetails();
             }
@@ -139,6 +120,32 @@ public class RecipeDetailsFragment extends Fragment {
                     .load(recipe.getImage().getUrl())
                     .into(ivImage);
         }
+    }
+
+    public void getRecipeDetails() {
+        String RECIPE_DETAILS_URL = ApiUrlHelper.getApiUrl(String.valueOf(recipeId) + "/information?includeNutrition=false");
+        Log.i(TAG, RECIPE_DETAILS_URL);
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(RECIPE_DETAILS_URL, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                JSONObject jsonObject = json.jsonObject;
+                try {
+                    recipeDetails = new RecipeDetails(jsonObject);
+                    setRecipeDetails();
+                    cache.put(recipeId, recipeDetails);
+
+                } catch (JSONException e) {
+                    Log.e(TAG, "Hit json exception", e);
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.e(TAG, "onFailure", throwable);
+            }
+        });
     }
 
     public void setRecipeDetails() {

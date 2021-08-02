@@ -18,6 +18,7 @@ import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
+import com.example.recipeapp.helpers.ApiUrlHelper;
 import com.example.recipeapp.helpers.FavoritesHelper;
 import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
@@ -31,6 +32,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import okhttp3.Headers;
@@ -40,18 +43,17 @@ import okhttp3.Headers;
  */
 public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickListener {
 
-    public static final String REST_CONSUMER_KEY = BuildConfig.CONSUMER_KEY;
-    public static final String BASE_URL = "https://api.spoonacular.com/recipes/findByIngredients";
     public static final String TAG = "RecipesFragment";
-    private String SEARCH_RECIPES_URL;
 
     private RecyclerView rvRecipes;
     private List<Recipe> allRecipes;
-    private List<Recipe> userRecipes;
     private RecipesAdapter adapter;
     private ParseUser currentUser;
     private List<String> ingredients;
     private String ingredientsString;
+
+    private boolean finishedUserQuery;
+    private boolean finishedApiQuery;
 
     public RecipesFragment() {
         // Required empty public constructor
@@ -70,7 +72,6 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
         rvRecipes = view.findViewById(R.id.rvRecipes);
 
         allRecipes = new ArrayList<>();
-        userRecipes = new ArrayList<>();
         adapter = new RecipesAdapter(getContext(), allRecipes, RecipesFragment.this);
 
         // create data for one row in list
@@ -81,53 +82,22 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
         // set layout manager on recycler view
         rvRecipes.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        finishedUserQuery = false;
+        finishedApiQuery = false;
+
         currentUser = ParseUser.getCurrentUser();
         ingredients = (List<String>) currentUser.get("ingredientsOwned");
         queryUserRecipes();
+        queryApiRecipes();
+    }
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < ingredients.size()-1; i++) {
-            sb.append(ingredients.get(i));
-            sb.append(",+");
+    class RecipeComparator implements Comparator<Recipe> {
+        @Override
+        public int compare(Recipe r1, Recipe r2) {
+            int r1MissedCount = r1.getMissedIngredientsCount();
+            int r2MissedCount = r2.getMissedIngredientsCount();
+            return r1MissedCount < r2MissedCount ? -1 : r1MissedCount == r2MissedCount ? 0 : 1;
         }
-        sb.append(ingredients.get(ingredients.size()-1));
-        ingredientsString = sb.toString();
-
-        SEARCH_RECIPES_URL = BASE_URL + "?ingredients=" + ingredientsString + "&number=20&ranking=2&apiKey=" + REST_CONSUMER_KEY;
-        Log.i(TAG, SEARCH_RECIPES_URL);
-
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(SEARCH_RECIPES_URL, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                JSONArray jsonArray = json.jsonArray;
-                try {
-                    allRecipes.addAll(Recipe.fromJsonArray(jsonArray));
-
-                    // add all user recipes that fit into allRecipes (based on # ingredients missed)
-                    for (int i = 0; i < userRecipes.size(); i++) {
-                        for (Recipe currAllRecipe : allRecipes) {
-                            Recipe currUserRecipe = userRecipes.get(i);
-                            Log.i(TAG, currAllRecipe.getTitle());
-                            if (currUserRecipe.getMissedIngredientsCount() <= currAllRecipe.getMissedIngredientsCount()) {
-                                allRecipes.add(allRecipes.indexOf(currAllRecipe), currUserRecipe);
-                                break;
-                            }
-                        }
-                    }
-
-                    adapter.notifyDataSetChanged();
-                    Log.i(TAG, "Recipes: " + allRecipes.size());
-                } catch (JSONException e) {
-                    Log.e(TAG, "Hit json exception", e);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.d(TAG, "onFailure: " + response + throwable);
-            }
-        });
     }
 
     protected void queryUserRecipes() {
@@ -140,11 +110,55 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
                     return;
                 }
                 try {
-                    userRecipes.clear();
-                    userRecipes.addAll(Recipe.fromParseRecipeArray(parseRecipes));
+                    allRecipes.addAll(Recipe.fromParseRecipeArray(parseRecipes));
+                    finishedUserQuery = true;
+
+                    if (finishedApiQuery) {
+                        // add all user recipes that fit into allRecipes (based on # ingredients missed)
+                        Collections.sort(allRecipes, new RecipeComparator());
+                        adapter.notifyDataSetChanged();
+                    }
                 } catch (JSONException jsonException) {
                     jsonException.printStackTrace();
                 }
+            }
+        });
+    }
+
+    private void queryApiRecipes() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ingredients.size()-1; i++) {
+            sb.append(ingredients.get(i));
+            sb.append(",+");
+        }
+        sb.append(ingredients.get(ingredients.size()-1));
+        ingredientsString = sb.toString();
+
+        String SEARCH_RECIPES_URL = ApiUrlHelper.getApiUrl("findByIngredients?ingredients=" + ingredientsString + "&number=20&ranking=2");
+        Log.i(TAG, SEARCH_RECIPES_URL);
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(SEARCH_RECIPES_URL, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                JSONArray jsonArray = json.jsonArray;
+                try {
+                    allRecipes.addAll(Recipe.fromJsonArray(jsonArray));
+                    finishedApiQuery = true;
+
+                    if (finishedUserQuery) {
+                        // add all user recipes that fit into allRecipes (based on # ingredients missed)
+                        Collections.sort(allRecipes, new RecipeComparator());
+                        adapter.notifyDataSetChanged();
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "Hit json exception", e);
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.d(TAG, "onFailure: " + response + throwable);
             }
         });
     }
