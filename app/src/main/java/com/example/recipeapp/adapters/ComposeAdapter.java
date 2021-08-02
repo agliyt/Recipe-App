@@ -77,9 +77,8 @@ public class ComposeAdapter extends RecyclerView.Adapter<ComposeAdapter.ViewHold
 
     private void undoDelete() {
         // add recipe back to parse
-        ParseRecipe parseRecipe = new ParseRecipe();
+        ParseRecipe parseRecipe = new ParseRecipe(recentlyDeletedRecipe);
         parseRecipe.setAuthor(currentUser);
-        parseRecipe.fromExistingRecipe(recentlyDeletedRecipe);
 
         parseRecipe.saveInBackground(new SaveCallback() {
             @Override
