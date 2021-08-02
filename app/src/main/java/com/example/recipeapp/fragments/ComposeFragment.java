@@ -41,6 +41,7 @@ import com.codepath.asynchttpclient.RequestParams;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
+import com.example.recipeapp.helpers.ApiUrlHelper;
 import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -173,7 +174,7 @@ public class ComposeFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
@@ -218,7 +219,7 @@ public class ComposeFragment extends Fragment {
         parseRecipe.setInstructions(instructions);
 
         // Using Volley for POST endpoints: https://stackoverflow.com/a/33578202
-        String URL = "https://api.spoonacular.com/recipes/parseIngredients?apiKey=" + REST_CONSUMER_KEY;
+        String URL = ApiUrlHelper.getApiUrl("parseIngredients");
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         JSONArray jsonArray = new JSONArray();
 

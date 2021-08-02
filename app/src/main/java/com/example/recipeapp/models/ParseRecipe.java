@@ -12,7 +12,10 @@ import java.util.List;
 @ParseClassName("ParseRecipe")
 public class ParseRecipe extends ParseObject {
 
-    public void fromExistingRecipe(Recipe recipe) {
+    public ParseRecipe() {
+    }
+
+    public ParseRecipe(Recipe recipe) {
         setTitle(recipe.getTitle());
         setImage(recipe.getImage());
         setServings(recipe.getServings());

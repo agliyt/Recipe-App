@@ -19,6 +19,7 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
 import com.example.recipeapp.adapters.RecipesAdapter;
+import com.example.recipeapp.helpers.ApiUrlHelper;
 import com.example.recipeapp.helpers.FavoritesHelper;
 import com.example.recipeapp.models.ParseRecipe;
 import com.example.recipeapp.models.Recipe;
@@ -41,8 +42,6 @@ import okhttp3.Headers;
 public class FavoritesFragment extends Fragment implements RecipesAdapter.OnClickListener {
 
     public static final String TAG = "FavoritesFragment";
-    public static final String REST_CONSUMER_KEY = BuildConfig.CONSUMER_KEY;
-    private String SEARCH_RECIPES_URL;
 
     private ParseUser currentUser;
     private List<String> favoriteApiRecipes;
@@ -89,7 +88,7 @@ public class FavoritesFragment extends Fragment implements RecipesAdapter.OnClic
         sb.append(favoriteApiRecipes.get(favoriteApiRecipes.size()-1));
         recipeIdString = sb.toString();
 
-        SEARCH_RECIPES_URL = "https://api.spoonacular.com/recipes/informationBulk?ids=" + recipeIdString + "&apiKey=" + REST_CONSUMER_KEY;
+        String SEARCH_RECIPES_URL = ApiUrlHelper.getApiUrl("informationBulk?ids=" + recipeIdString);
         Log.i(TAG, SEARCH_RECIPES_URL);
 
         AsyncHttpClient client = new AsyncHttpClient();
