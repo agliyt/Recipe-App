@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.recipeapp.cache.Cache;
 import com.example.recipeapp.fragments.ComposeFragment;
 import com.example.recipeapp.fragments.FavoritesFragment;
 import com.example.recipeapp.fragments.IngredientsFragment;

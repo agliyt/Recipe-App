@@ -1,6 +1,8 @@
 package com.example.recipeapp.cache;
 
 
+import android.util.Log;
+
 import com.example.recipeapp.models.RecipeDetails;
 
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.Map;
 
 public class Cache {
 
+    private static Cache cache;
     private long timeToLive;
     private int maxItems;
     private Map<Integer, CacheObject> cacheMap;
@@ -48,6 +51,13 @@ public class Cache {
         }
     }
 
+    public static Cache getCache() {
+        if (cache == null) {
+            cache = new Cache(86400, 1, 20);
+        }
+        return cache;
+    }
+
     public void put(Integer id, RecipeDetails recipeDetails) {
         synchronized (cacheMap) {
             if (cacheMap.size() == maxItems) {
@@ -56,6 +66,7 @@ public class Cache {
             }
 
             cacheMap.put(id, new CacheObject(recipeDetails));
+            Log.i("Cache", cacheMap.toString());
         }
     }
 
@@ -68,6 +79,8 @@ public class Cache {
                 return null;
             else {
                 object.lastAccessed = System.currentTimeMillis();
+                cacheMap.remove(id);
+                cacheMap.put(id, object);
                 return object.recipeDetails;
             }
         }

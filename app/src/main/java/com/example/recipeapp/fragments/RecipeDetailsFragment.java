@@ -19,7 +19,9 @@ import com.bumptech.glide.Glide;
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.recipeapp.BuildConfig;
+import com.example.recipeapp.MainActivity;
 import com.example.recipeapp.R;
+import com.example.recipeapp.cache.Cache;
 import com.example.recipeapp.models.Recipe;
 import com.example.recipeapp.models.RecipeDetails;
 
@@ -40,6 +42,7 @@ public class RecipeDetailsFragment extends Fragment {
     public static final String REST_CONSUMER_KEY = BuildConfig.CONSUMER_KEY;
     public static String RECIPE_DETAILS_URL;
 
+    private Cache cache;
     private Recipe recipe;
     private RecipeDetails recipeDetails;
     private int recipeId;
@@ -71,6 +74,8 @@ public class RecipeDetailsFragment extends Fragment {
         recipe = (Recipe) bundle.getSerializable("recipe");
         recipeId = recipe.getId();
 
+        cache = Cache.getCache();
+
         tvTitle = view.findViewById(R.id.tvTitle);
         ivImage = view.findViewById(R.id.ivImage);
         tvServings = view.findViewById(R.id.tvServings);
@@ -95,45 +100,34 @@ public class RecipeDetailsFragment extends Fragment {
         }
 
         if (recipe.isFromApi()) {
-            RECIPE_DETAILS_URL = "https://api.spoonacular.com/recipes/" + String.valueOf(recipeId) + "/information?includeNutrition=false&apiKey=" + REST_CONSUMER_KEY;
-            Log.i(TAG, RECIPE_DETAILS_URL);
+            recipeDetails = cache.get(recipeId);
+            if (recipeDetails == null) { // if recipeDetails is not in cache
+                RECIPE_DETAILS_URL = "https://api.spoonacular.com/recipes/" + String.valueOf(recipeId) + "/information?includeNutrition=false&apiKey=" + REST_CONSUMER_KEY;
+                Log.i(TAG, RECIPE_DETAILS_URL);
 
-            AsyncHttpClient client = new AsyncHttpClient();
-            client.get(RECIPE_DETAILS_URL, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Headers headers, JSON json) {
-                    JSONObject jsonObject = json.jsonObject;
-                    try {
-                        recipeDetails = new RecipeDetails(jsonObject);
-                        tvTitle.setText(recipeDetails.getTitle());
-                        tvServings.setText("Servings: " + String.valueOf(recipeDetails.getServings()));
-                        tvReadyInMinutes.setText("Ready in " + String.valueOf(recipeDetails.getReadyInMinutes()) + " minutes");
-                        tvInstructions.setText(recipeDetails.getInstructions());
+                AsyncHttpClient client = new AsyncHttpClient();
+                client.get(RECIPE_DETAILS_URL, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Headers headers, JSON json) {
+                        JSONObject jsonObject = json.jsonObject;
+                        try {
+                            recipeDetails = new RecipeDetails(jsonObject);
+                            setRecipeDetails();
+                            cache.put(recipeId, recipeDetails);
 
-                        List<String> ingredients = recipeDetails.getIngredients();
-                        StringBuilder sb = new StringBuilder();
-                        for (int i = 0; i < ingredients.size() - 1; i++) {
-                            sb.append(ingredients.get(i));
-                            sb.append("\n");
+                        } catch (JSONException e) {
+                            Log.e(TAG, "Hit json exception", e);
                         }
-                        sb.append(ingredients.get(ingredients.size() - 1));
-
-                        tvIngredients.setText(sb.toString());
-
-                        Glide.with(getContext())
-                                .load(recipeDetails.getImageUrl())
-                                .into(ivImage);
-
-                    } catch (JSONException e) {
-                        Log.e(TAG, "Hit json exception", e);
                     }
-                }
 
-                @Override
-                public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                    Log.e(TAG, "onFailure", throwable);
-                }
-            });
+                    @Override
+                    public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                        Log.e(TAG, "onFailure", throwable);
+                    }
+                });
+            } else { // recipeDetails found in cache
+                setRecipeDetails();
+            }
         } else {
             tvTitle.setText(recipe.getTitle());
             tvServings.setText("Servings: " + String.valueOf(recipe.getServings()));
@@ -145,5 +139,26 @@ public class RecipeDetailsFragment extends Fragment {
                     .load(recipe.getImage().getUrl())
                     .into(ivImage);
         }
+    }
+
+    public void setRecipeDetails() {
+        tvTitle.setText(recipeDetails.getTitle());
+        tvServings.setText("Servings: " + String.valueOf(recipeDetails.getServings()));
+        tvReadyInMinutes.setText("Ready in " + String.valueOf(recipeDetails.getReadyInMinutes()) + " minutes");
+        tvInstructions.setText(recipeDetails.getInstructions());
+
+        List<String> ingredients = recipeDetails.getIngredients();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ingredients.size() - 1; i++) {
+            sb.append(ingredients.get(i));
+            sb.append("\n");
+        }
+        sb.append(ingredients.get(ingredients.size() - 1));
+
+        tvIngredients.setText(sb.toString());
+
+        Glide.with(getContext())
+                .load(recipeDetails.getImageUrl())
+                .into(ivImage);
     }
 }
