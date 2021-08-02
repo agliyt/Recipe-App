@@ -101,12 +101,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "receipt camera button clicked");
             ReceiptProcessor.processReceipt();
 
-            Menu menu = bottomNavigationView.getMenu();
-            menu.findItem(R.id.ingredientsTab).setIcon(R.drawable.ic_round_view_list_24);
-            menu.findItem(R.id.recipesTab).setIcon(R.drawable.ic_outline_fastfood_24);
-            menu.findItem(R.id.composeTab).setIcon(R.drawable.ic_outline_create_24);
-            menu.findItem(R.id.shoppingListTab).setIcon(R.drawable.ic_outline_shopping_cart_24);
-            menu.findItem(R.id.favoritesTab).setIcon(R.drawable.ic_round_star_outline_24);
+            bottomNavigationView.setSelectedItemId(R.id.ingredientsTab);
 
             FragmentTransaction ft =  fragmentManager.beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
