@@ -1,5 +1,6 @@
 package com.example.recipeapp.helpers;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
@@ -56,6 +57,7 @@ public class ReceiptProcessor extends AppCompatActivity {
     private ParseUser currentUser;
     private Receipt receipt;
     private static File photoFile;
+    ProgressDialog pd;
 
     public void launchCamera() {
         // create Intent to take a picture and return control to the calling application
@@ -83,7 +85,6 @@ public class ReceiptProcessor extends AppCompatActivity {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // by this point we have the camera photo on disk
-                // query to API
                 uploadReceiptToParse();
             } else { // Result was a failure
                 Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
@@ -110,6 +111,14 @@ public class ReceiptProcessor extends AppCompatActivity {
     }
 
     private void uploadReceiptToParse() {
+        // show a loading panel
+        pd = new ProgressDialog(this);
+        pd.setTitle("Loading...");
+        pd.setMessage("Uploading your receipt...");
+        pd.setCancelable(false);
+
+        pd.show();
+
         ParseQuery<Receipt> query = ParseQuery.getQuery(Receipt.class);
         query.include("user");
         query.findInBackground(new FindCallback<Receipt>() {
@@ -142,6 +151,8 @@ public class ReceiptProcessor extends AppCompatActivity {
     }
 
     private void queryToApi() {
+        pd.setMessage("Processing your receipt...");
+
         // Using Volley for POST endpoints: https://stackoverflow.com/a/33578202
         String URL = "https://api.veryfi.com/api/v7/partner/documents/";
 
@@ -217,6 +228,8 @@ public class ReceiptProcessor extends AppCompatActivity {
     }
 
     private void parseIngredients(List<String> ingredients) {
+        pd.setMessage("Parsing your ingredients...");
+
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ingredients.size() - 1; i++) {
             sb.append(ingredients.get(i));
@@ -270,6 +283,8 @@ public class ReceiptProcessor extends AppCompatActivity {
     }
 
     private void saveNewIngredients(List<String> newIngredients) {
+        pd.setMessage("Saving your ingredients...");
+
         currentUser = ParseUser.getCurrentUser();
         List<String> ingredients = (List<String>) currentUser.get("ingredientsOwned");
 
@@ -283,6 +298,7 @@ public class ReceiptProcessor extends AppCompatActivity {
                 if(e==null){
                     //Save successfull
                     Log.i(TAG, "Save successful: " + ingredients.toString());
+                    pd.dismiss();
                 }else{
                     // Something went wrong while saving
                     Log.e(TAG, "Save unsuccessful", e);
