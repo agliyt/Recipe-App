@@ -23,7 +23,7 @@ import com.example.recipeapp.helpers.ReceiptProcessor;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.ParseUser;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ReceiptProcessor {
 
     public static final String TAG = "MainActivity";
 
@@ -99,17 +99,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (item.getItemId() == R.id.receiptCamera) {
             Log.i(TAG, "receipt camera button clicked");
-            ReceiptProcessor.processReceipt();
-
-            bottomNavigationView.setSelectedItemId(R.id.ingredientsTab);
-
-            FragmentTransaction ft =  fragmentManager.beginTransaction();
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            IngredientsFragment ingredientsFragment = new IngredientsFragment();
-
-            ft.replace(R.id.flRecipesContainer, ingredientsFragment);
-            ft.addToBackStack(null);
-            ft.commit();
+            processReceipt();
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -23,6 +23,8 @@ android {
             }
         }
         buildConfigField("String", "CONSUMER_KEY", CONSUMER_KEY)
+        buildConfigField("String", "VERYFI_KEY", VERYFI_KEY)
+        buildConfigField("String", "VERYFI_CLIENT_ID", VERYFI_CLIENT_ID)
     }
 
     // Related to https://github.com/scribejava/scribejava/issues/480
