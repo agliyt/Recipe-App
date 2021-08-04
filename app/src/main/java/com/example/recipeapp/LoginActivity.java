@@ -11,9 +11,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.recipeapp.models.Receipt;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -70,6 +72,20 @@ public class LoginActivity extends AppCompatActivity {
             if (e == null) {
                 goMainActivity();
                 Toast.makeText(LoginActivity.this, "Sign up success!", Toast.LENGTH_SHORT).show();
+
+                // make a new receipt holder for user
+                Receipt receipt = new Receipt();
+                receipt.setUser(user);
+                receipt.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e != null) {
+                            Log.e(TAG, "Error while saving receipt holder", e);
+                            return;
+                        }
+                        Log.i(TAG, "Receipt holder save was successful");
+                    }
+                });
             } else {
                 Log.e(TAG, "Issue with sign up", e);
                 Toast.makeText(LoginActivity.this, "Issue with sign up!", Toast.LENGTH_SHORT).show();

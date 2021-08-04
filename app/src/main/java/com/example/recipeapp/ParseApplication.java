@@ -1,6 +1,7 @@
 package com.example.recipeapp;
 
 import com.example.recipeapp.models.ParseRecipe;
+import com.example.recipeapp.models.Receipt;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -15,6 +16,7 @@ public class ParseApplication extends Application {
 
         // Register your parse models here
         ParseObject.registerSubclass(ParseRecipe.class);
+        Receipt.registerSubclass(Receipt.class);
 
         Parse.initialize(new Parse.Configuration.Builder(this)
                 .applicationId("gCAMkOgLAW5ecgtlOxsjefMMY7gBN2gHBW1q7P80")

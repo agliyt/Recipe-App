@@ -1,13 +1,10 @@
 package com.example.recipeapp.helpers;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -19,6 +16,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
@@ -27,11 +25,14 @@ import com.android.volley.toolbox.Volley;
 import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
 import com.example.recipeapp.fragments.IngredientsFragment;
-import com.example.recipeapp.fragments.MakeRecipeFragment;
+import com.example.recipeapp.models.Receipt;
+import com.example.recipeapp.models.Recipe;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ReceiptProcessor extends AppCompatActivity {
-    
+
     public static final String API_KEY = BuildConfig.VERYFI_KEY;
     public static final String CLIENT_ID = BuildConfig.VERYFI_CLIENT_ID;
     public static final String TAG = "ReceiptProcessor";
@@ -53,6 +54,7 @@ public class ReceiptProcessor extends AppCompatActivity {
     public static String photoFileName = "receipt.jpg";
 
     private ParseUser currentUser;
+    private Receipt receipt;
     private static File photoFile;
 
     public void launchCamera() {
@@ -82,11 +84,61 @@ public class ReceiptProcessor extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 // by this point we have the camera photo on disk
                 // query to API
-                queryToApi();
+                uploadReceiptToParse();
             } else { // Result was a failure
                 Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    // Returns the File for a photo stored on disk given the fileName
+    private File getPhotoFileUri(String fileName) {
+        // Get safe storage directory for photos
+        // Use `getExternalFilesDir` on Context to access package-specific directories.
+        // This way, we don't need to request external read/write runtime permissions.
+        File mediaStorageDir = new File(this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
+            Log.d(TAG, "failed to create directory");
+        }
+
+        // Return the file target for the photo based on filename
+        File file = new File(mediaStorageDir.getPath() + File.separator + fileName);
+
+        return file;
+    }
+
+    private void uploadReceiptToParse() {
+        ParseQuery<Receipt> query = ParseQuery.getQuery(Receipt.class);
+        query.include("user");
+        query.findInBackground(new FindCallback<Receipt>() {
+            @Override
+            public void done(List<Receipt> receipts, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Issue with getting receipt", e);
+                    return;
+                }
+                // should only be one receipt per user
+                if (receipts.size() != 1) {
+                    Log.e(TAG, "Only 1 receipt allowed per user!");
+                }
+                receipt = receipts.get(0);
+                receipt.setImage(new ParseFile(photoFile));
+
+                // Saves the object.
+                receipt.saveInBackground(error -> {
+                    if (error == null) {
+                        //Save successful
+                        Log.i(TAG, "Save successful");
+                        queryToApi();
+                    } else {
+                        // Something went wrong while saving
+                        Log.e(TAG, "Save unsuccessful", error);
+                    }
+                });
+            }
+        });
     }
 
     private void queryToApi() {
@@ -97,7 +149,7 @@ public class ReceiptProcessor extends AppCompatActivity {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("file_name", photoFileName);
-            jsonObject.put("file_url", "http://sunnymoney.weebly.com/uploads/1/9/6/4/19645963/veggie-grocery-receipt_orig.jpeg");
+            jsonObject.put("file_url", receipt.getImage().getUrl());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -145,6 +197,22 @@ public class ReceiptProcessor extends AppCompatActivity {
                 return headers;
             }
         };
+
+        // in case of timeout error
+        volleyRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+            }
+        });
+
         requestQueue.add(volleyRequest);
     }
 
@@ -232,24 +300,6 @@ public class ReceiptProcessor extends AppCompatActivity {
         ft.replace(R.id.flRecipesContainer, ingredientsFragment);
         ft.addToBackStack(null);
         ft.commit();
-    }
-
-    // Returns the File for a photo stored on disk given the fileName
-    private File getPhotoFileUri(String fileName) {
-        // Get safe storage directory for photos
-        // Use `getExternalFilesDir` on Context to access package-specific directories.
-        // This way, we don't need to request external read/write runtime permissions.
-        File mediaStorageDir = new File(this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
-
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
-            Log.d(TAG, "failed to create directory");
-        }
-
-        // Return the file target for the photo based on filename
-        File file = new File(mediaStorageDir.getPath() + File.separator + fileName);
-
-        return file;
     }
 
 }
