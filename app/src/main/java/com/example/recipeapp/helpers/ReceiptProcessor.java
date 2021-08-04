@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -19,39 +20,42 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.recipeapp.BuildConfig;
 import com.example.recipeapp.R;
 import com.example.recipeapp.fragments.IngredientsFragment;
+import com.example.recipeapp.fragments.MakeRecipeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ReceiptProcessor extends AppCompatActivity {
-
+    
     public static final String API_KEY = BuildConfig.VERYFI_KEY;
     public static final String CLIENT_ID = BuildConfig.VERYFI_CLIENT_ID;
     public static final String TAG = "ReceiptProcessor";
     public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
     public static String photoFileName = "receipt.jpg";
 
+    private ParseUser currentUser;
     private static File photoFile;
 
-    public void processReceipt() {
-        launchCamera();
-    }
-
-    private void launchCamera() {
+    public void launchCamera() {
         // create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Create a File reference for future access
@@ -77,16 +81,15 @@ public class ReceiptProcessor extends AppCompatActivity {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // by this point we have the camera photo on disk
-                Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                 // query to API
-                queryToApi(takenImage);
+                queryToApi();
             } else { // Result was a failure
                 Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private void queryToApi(Bitmap bitmap) {
+    private void queryToApi() {
         // Using Volley for POST endpoints: https://stackoverflow.com/a/33578202
         String URL = "https://api.veryfi.com/api/v7/partner/documents/";
 
@@ -108,43 +111,17 @@ public class ReceiptProcessor extends AppCompatActivity {
                     line_items = response.getJSONArray("line_items");
                     List<String> newIngredients = new ArrayList<>();
                     for (int i = 0; i < line_items.length(); i++) {
-                        newIngredients.add(line_items.getJSONObject(i).getString("description"));
+                        String ingredient = line_items.getJSONObject(i).getString("description");
+                        if (!ingredient.equals("SPECIAL")) {
+                            newIngredients.add(ingredient);
+                        }
                     }
                     Log.i(TAG, newIngredients.toString());
 
-                    ParseUser currentUser = ParseUser.getCurrentUser();
-                    List<String> ingredients = (List<String>) currentUser.get("ingredientsOwned");
-
-                    ingredients.addAll(newIngredients);
-                    if (currentUser != null) {
-                        // Other attributes than "ingredientsOwned" will remain unchanged!
-                        currentUser.put("ingredientsOwned", ingredients);
-
-                        // Saves the object.
-                        currentUser.saveInBackground(e -> {
-                            if(e==null){
-                                //Save successfull
-                                Log.i(TAG, "Save successful: " + ingredients.toString());
-                            }else{
-                                // Something went wrong while saving
-                                Log.e(TAG, "Save unsuccessful", e);
-                            }
-                        });
-                    }
+                    parseIngredients(newIngredients);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-                bottomNavigationView.setSelectedItemId(R.id.ingredientsTab);
-
-                FragmentTransaction ft =  getSupportFragmentManager().beginTransaction();
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                IngredientsFragment ingredientsFragment = new IngredientsFragment();
-
-                ft.replace(R.id.flRecipesContainer, ingredientsFragment);
-                ft.addToBackStack(null);
-                ft.commit();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -169,6 +146,92 @@ public class ReceiptProcessor extends AppCompatActivity {
             }
         };
         requestQueue.add(volleyRequest);
+    }
+
+    private void parseIngredients(List<String> ingredients) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ingredients.size() - 1; i++) {
+            sb.append(ingredients.get(i));
+            sb.append("\n");
+        }
+        sb.append(ingredients.get(ingredients.size() - 1));
+        String ingredientsString = sb.toString();
+
+        String URL = ApiUrlHelper.getIngredientsParseUrl();
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        JSONArray jsonArray = new JSONArray();
+
+        JsonArrayRequest volleyRequest = new JsonArrayRequest(Request.Method.POST, URL, jsonArray, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                Log.i("VOLLEY", response.toString());
+                List<String> ingredientsParsed = new ArrayList<>();
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        ingredientsParsed.add(response.getJSONObject(i).getString("name"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                saveNewIngredients(ingredientsParsed);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("VOLLEY", "VolleyError", error);
+            }
+        }) {
+            @Override
+            public String getBodyContentType() {
+                return "application/x-www-form-urlencoded; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() {
+                try {
+                    String s = "ingredientList=\"" + ingredientsString + "\"";
+                    return s.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of request body using %s", "utf-8");
+                    return null;
+                }
+            }
+        };
+        requestQueue.add(volleyRequest);
+    }
+
+    private void saveNewIngredients(List<String> newIngredients) {
+        currentUser = ParseUser.getCurrentUser();
+        List<String> ingredients = (List<String>) currentUser.get("ingredientsOwned");
+
+        ingredients.addAll(newIngredients);
+        if (currentUser != null) {
+            // Other attributes than "ingredientsOwned" will remain unchanged!
+            currentUser.put("ingredientsOwned", ingredients);
+
+            // Saves the object.
+            currentUser.saveInBackground(e -> {
+                if(e==null){
+                    //Save successfull
+                    Log.i(TAG, "Save successful: " + ingredients.toString());
+                }else{
+                    // Something went wrong while saving
+                    Log.e(TAG, "Save unsuccessful", e);
+                }
+            });
+        }
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.ingredientsTab);
+
+        FragmentTransaction ft =  getSupportFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        IngredientsFragment ingredientsFragment = new IngredientsFragment();
+
+        ft.replace(R.id.flRecipesContainer, ingredientsFragment);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     // Returns the File for a photo stored on disk given the fileName

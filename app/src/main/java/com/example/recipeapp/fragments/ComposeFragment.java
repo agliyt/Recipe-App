@@ -72,7 +72,6 @@ import static android.app.Activity.RESULT_OK;
  */
 public class ComposeFragment extends Fragment {
 
-    public static final String REST_CONSUMER_KEY = BuildConfig.CONSUMER_KEY;
     public static final String TAG = "ComposeFragment";
     public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
     public String photoFileName = "photo.jpg";
@@ -219,7 +218,7 @@ public class ComposeFragment extends Fragment {
         parseRecipe.setInstructions(instructions);
 
         // Using Volley for POST endpoints: https://stackoverflow.com/a/33578202
-        String URL = ApiUrlHelper.getApiUrl("parseIngredients");
+        String URL = ApiUrlHelper.getIngredientsParseUrl();
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         JSONArray jsonArray = new JSONArray();
 
@@ -286,17 +285,6 @@ public class ComposeFragment extends Fragment {
                     VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of request body using %s", "utf-8");
                     return null;
                 }
-            }
-
-            // https://stackoverflow.com/a/30696882
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("ingredientList", "1 cup flour");
-                params.put("servings", "3");
-                params.put("includeNutrition", "false");
-                params.put("language", "en");
-                return params;
             }
         };
         requestQueue.add(volleyRequest);

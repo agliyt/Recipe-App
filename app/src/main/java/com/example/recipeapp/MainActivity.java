@@ -99,7 +99,7 @@ public class MainActivity extends ReceiptProcessor {
             return true;
         } else if (item.getItemId() == R.id.receiptCamera) {
             Log.i(TAG, "receipt camera button clicked");
-            processReceipt();
+            launchCamera();
             return true;
         }
         return super.onOptionsItemSelected(item);

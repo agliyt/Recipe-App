@@ -12,4 +12,8 @@ public class ApiUrlHelper {
         return BASE_URL + query + KEY_URL;
     }
 
+    public static String getIngredientsParseUrl() {
+        return BASE_URL + "parseIngredients?apiKey=" + REST_CONSUMER_KEY;
+    }
+
 }
