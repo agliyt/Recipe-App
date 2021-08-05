@@ -25,7 +25,7 @@
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="5dp"
             android:fontFamily="@font/belgrano"
-            android:text="TextView"
+            android:text="Recipe not loaded..."
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
@@ -91,7 +91,7 @@
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="5dp"
             android:fontFamily="@font/belgrano"
-            tools:text="ingredients" />
+            android:text="Ingredients not loaded..." />
 
         <TextView
             android:id="@+id/tvInstructions"
@@ -115,6 +115,6 @@
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="5dp"
             android:fontFamily="@font/belgrano"
-            tools:text="instructions" />
+            android:text="Instructions not loaded..." />
     </RelativeLayout>
 </androidx.core.widget.NestedScrollView>
