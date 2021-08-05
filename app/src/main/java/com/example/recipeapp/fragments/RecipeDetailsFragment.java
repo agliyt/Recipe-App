@@ -1,5 +1,6 @@
 package com.example.recipeapp.fragments;
 
+import android.app.Dialog;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
@@ -25,6 +26,10 @@ import com.example.recipeapp.cache.Cache;
 import com.example.recipeapp.helpers.ApiUrlHelper;
 import com.example.recipeapp.models.Recipe;
 import com.example.recipeapp.models.RecipeDetails;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -37,7 +42,7 @@ import okhttp3.Headers;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecipeDetailsFragment extends Fragment {
+public class RecipeDetailsFragment extends BottomSheetDialogFragment {
 
     public static final String TAG = "RecipeDetailsFragment";
 
@@ -56,6 +61,50 @@ public class RecipeDetailsFragment extends Fragment {
 
     public RecipeDetailsFragment() {
         // Required empty public constructor
+    }
+
+    private BottomSheetBehavior mBehavior;
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
+        final View view = View.inflate(getContext(), R.layout.fragment_recipe_details, null);
+
+        dialog.setContentView(view);
+        mBehavior = BottomSheetBehavior.from((View) view.getParent());
+        mBehavior.setPeekHeight(BottomSheetBehavior.PEEK_HEIGHT_AUTO);
+
+
+        mBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (BottomSheetBehavior.STATE_EXPANDED == newState) {
+                    // View is expended
+                }
+                if (BottomSheetBehavior.STATE_COLLAPSED == newState) {
+                    // View is collapsed
+                }
+
+                if (BottomSheetBehavior.STATE_HIDDEN == newState) {
+                    dismiss();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+
+        return dialog;
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     @Override

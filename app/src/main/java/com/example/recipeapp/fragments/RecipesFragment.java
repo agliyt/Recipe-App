@@ -162,16 +162,12 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
     @Override
     public void onItemClicked(int position) {
         final Recipe recipe = allRecipes.get(position);
-        FragmentTransaction ft =  getActivity().getSupportFragmentManager().beginTransaction();
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         RecipeDetailsFragment recipeDetailsFragment = new RecipeDetailsFragment();
 
         Bundle bundle = new Bundle();
         bundle.putSerializable("recipe", recipe);
         recipeDetailsFragment.setArguments(bundle);
-        ft.replace(R.id.flRecipesContainer, recipeDetailsFragment);
-        ft.addToBackStack(null);
-        ft.commit();
+        recipeDetailsFragment.show(getActivity().getSupportFragmentManager(), recipeDetailsFragment.getTag());
     }
 
     @Override
