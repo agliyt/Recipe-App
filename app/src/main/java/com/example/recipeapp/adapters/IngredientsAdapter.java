@@ -8,6 +8,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.recipeapp.R;
+
 import java.util.List;
 
 // Responsible for displaying data from the model into a row in the recycler view
@@ -29,7 +31,7 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Use layout inflater to inflate a view
-        View todoView = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
+        View todoView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ingredient, parent, false);
 
         // Wrap it inside a View Holder and return it
         return new ViewHolder(todoView);
@@ -58,7 +60,7 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvIngredient = itemView.findViewById(android.R.id.text1);
+            tvIngredient = itemView.findViewById(R.id.text1);
         }
 
         // Update the view inside the View Holder with this data

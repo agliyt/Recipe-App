@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:fontFamily="@font/belgrano"
         android:text="@string/add" />
 
     <EditText
@@ -24,10 +25,11 @@
         android:layout_marginBottom="0dp"
         android:layout_toStartOf="@+id/btnAdd"
         android:ems="10"
+        android:fontFamily="@font/belgrano"
         android:hint="@string/add_an_ingredient"
+        android:importantForAutofill="no"
         android:inputType="text"
-        tools:layout_marginBottom="0dp"
-        android:importantForAutofill="no" />
+        tools:layout_marginBottom="0dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvIngredients"

@@ -8,8 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="5dp"
@@ -38,16 +37,18 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/ivRecipeImage"
             android:layout_marginTop="0dp"
+            android:fontFamily="@font/belgrano"
             android:text="Take Picture" />
 
 
         <EditText
             android:id="@+id/etServings"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/btnCaptureImage"
-            android:layout_centerHorizontal="true"
+            android:layout_marginStart="0dp"
             android:layout_marginTop="5dp"
+            android:layout_toEndOf="@+id/textView"
             android:ems="10"
             android:fontFamily="@font/belgrano"
             android:hint="# Servings"
@@ -56,11 +57,12 @@
 
         <EditText
             android:id="@+id/etReadyInMinutes"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/etServings"
-            android:layout_centerHorizontal="true"
+            android:layout_centerHorizontal="false"
             android:layout_marginTop="0dp"
+            android:layout_toRightOf="@id/textView2"
             android:ems="10"
             android:fontFamily="@font/belgrano"
             android:hint="# Minutes Needed"
@@ -71,8 +73,8 @@
             android:id="@+id/etIngredients"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/etReadyInMinutes"
-            android:layout_marginTop="5dp"
+            android:layout_below="@+id/textView3"
+            android:layout_marginTop="0dp"
             android:ems="10"
             android:fontFamily="@font/belgrano"
             android:gravity="start|top"
@@ -83,7 +85,7 @@
             android:id="@+id/etInstructions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/etIngredients"
+            android:layout_below="@+id/textView4"
             android:layout_marginTop="0dp"
             android:ems="10"
             android:fontFamily="@font/belgrano"
@@ -97,7 +99,49 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/etInstructions"
             android:layout_marginTop="5dp"
+            android:fontFamily="@font/belgrano"
             android:text="Submit" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/etReadyInMinutes"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/belgrano"
+            android:text="Servings"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/etReadyInMinutes"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/belgrano"
+            android:text="Minutes Needed"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/etReadyInMinutes"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/belgrano"
+            android:text="Ingredients"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/etIngredients"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/belgrano"
+            android:text="Instructions"
+            android:textSize="16sp" />
 
     </RelativeLayout>
 
