@@ -57,7 +57,7 @@ public class ReceiptProcessor extends AppCompatActivity {
     private ParseUser currentUser;
     private Receipt receipt;
     private static File photoFile;
-    ProgressDialog pd;
+    private ProgressDialog pd;
 
     public void launchCamera() {
         // create Intent to take a picture and return control to the calling application
@@ -116,7 +116,6 @@ public class ReceiptProcessor extends AppCompatActivity {
         pd.setTitle("Loading...");
         pd.setMessage("Uploading your receipt...");
         pd.setCancelable(false);
-
         pd.show();
 
         ParseQuery<Receipt> query = ParseQuery.getQuery(Receipt.class);
