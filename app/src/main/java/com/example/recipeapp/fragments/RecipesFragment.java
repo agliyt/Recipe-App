@@ -83,8 +83,10 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnClickL
 
         currentUser = ParseUser.getCurrentUser();
         ingredients = (List<String>) currentUser.get("ingredientsOwned");
-        queryUserRecipes();
-        queryApiRecipes();
+        if (ingredients.size() > 0) {
+            queryUserRecipes();
+            queryApiRecipes();
+        }
     }
 
     class RecipeComparator implements Comparator<Recipe> {

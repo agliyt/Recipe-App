@@ -59,11 +59,11 @@ public class RecipeDetailsFragment extends BottomSheetDialogFragment {
     private TextView tvInstructions;
     private RelativeLayout rlDetailsView;
 
+    private BottomSheetBehavior mBehavior;
+
     public RecipeDetailsFragment() {
         // Required empty public constructor
     }
-
-    private BottomSheetBehavior mBehavior;
 
     @NonNull
     @Override
@@ -74,7 +74,6 @@ public class RecipeDetailsFragment extends BottomSheetDialogFragment {
         dialog.setContentView(view);
         mBehavior = BottomSheetBehavior.from((View) view.getParent());
         mBehavior.setPeekHeight(BottomSheetBehavior.PEEK_HEIGHT_AUTO);
-
 
         mBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -99,7 +98,6 @@ public class RecipeDetailsFragment extends BottomSheetDialogFragment {
 
         return dialog;
     }
-
 
     @Override
     public void onStart() {

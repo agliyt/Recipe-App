@@ -26,6 +26,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.json.JSONException;
 
@@ -45,6 +46,8 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
     private ComposeAdapter adapter;
     private Button btnCompose;
 
+    private ParseUser currentUser;
+
     public MakeRecipeFragment() {
         // Required empty public constructor
     }
@@ -60,6 +63,8 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rvUserRecipes = view.findViewById(R.id.rvUserRecipes);
+
+        currentUser = ParseUser.getCurrentUser();
 
         allRecipes = new ArrayList<>();
         adapter = new ComposeAdapter(getContext(), allRecipes, MakeRecipeFragment.this);
@@ -91,7 +96,7 @@ public class MakeRecipeFragment extends Fragment implements ComposeAdapter.OnCli
 
     protected void queryUserRecipes() {
         ParseQuery<ParseRecipe> query = ParseQuery.getQuery(ParseRecipe.class);
-        query.include("author");
+        query.whereEqualTo("author", currentUser.getObjectId());
         query.addDescendingOrder("createdAt");
         query.findInBackground(new FindCallback<ParseRecipe>() {
             @Override

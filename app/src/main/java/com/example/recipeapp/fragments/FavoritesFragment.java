@@ -72,7 +72,9 @@ public class FavoritesFragment extends Fragment implements RecipesAdapter.OnClic
         rvRecipes = view.findViewById(R.id.rvRecipes);
 
         allRecipes = new ArrayList<>();
-        queryUserRecipes();
+        if (favoriteUserRecipes.size() > 0) {
+            queryUserRecipes();
+        }
 
         adapter = new RecipesAdapter(getContext(), allRecipes, FavoritesFragment.this);
         // set adapter on recycler view
@@ -80,36 +82,38 @@ public class FavoritesFragment extends Fragment implements RecipesAdapter.OnClic
         // set layout manager on recycler view
         rvRecipes.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < favoriteApiRecipes.size()-1; i++) {
-            sb.append(favoriteApiRecipes.get(i));
-            sb.append(",");
-        }
-        sb.append(favoriteApiRecipes.get(favoriteApiRecipes.size()-1));
-        recipeIdString = sb.toString();
+        if (favoriteApiRecipes.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < favoriteApiRecipes.size() - 1; i++) {
+                sb.append(favoriteApiRecipes.get(i));
+                sb.append(",");
+            }
+            sb.append(favoriteApiRecipes.get(favoriteApiRecipes.size() - 1));
+            recipeIdString = sb.toString();
 
-        String SEARCH_RECIPES_URL = ApiUrlHelper.getApiUrl("informationBulk?ids=" + recipeIdString);
-        Log.i(TAG, SEARCH_RECIPES_URL);
+            String SEARCH_RECIPES_URL = ApiUrlHelper.getApiUrl("informationBulk?ids=" + recipeIdString);
+            Log.i(TAG, SEARCH_RECIPES_URL);
 
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(SEARCH_RECIPES_URL, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                JSONArray jsonArray = json.jsonArray;
-                try {
-                    allRecipes.addAll(Recipe.fromJsonArrayFullRecipe(jsonArray));
-                    adapter.notifyDataSetChanged();
-                    Log.i(TAG, "Recipes: " + allRecipes.size());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            AsyncHttpClient client = new AsyncHttpClient();
+            client.get(SEARCH_RECIPES_URL, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Headers headers, JSON json) {
+                    JSONArray jsonArray = json.jsonArray;
+                    try {
+                        allRecipes.addAll(Recipe.fromJsonArrayFullRecipe(jsonArray));
+                        adapter.notifyDataSetChanged();
+                        Log.i(TAG, "Recipes: " + allRecipes.size());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.d(TAG, "onFailure: " + response + throwable);
-            }
-        });
+                @Override
+                public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                    Log.d(TAG, "onFailure: " + response + throwable);
+                }
+            });
+        }
     }
 
     protected void queryUserRecipes() {
